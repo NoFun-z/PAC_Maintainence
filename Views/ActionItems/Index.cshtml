@@ -1,0 +1,211 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.ActionItem>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Action Items</h1>
+@if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+{
+    <p>
+        <a asp-action="Create">Assign Action Item</a>
+    </p>
+}
+<form asp-action="Index" method="get">
+    <br />
+    <div class="container-fluid d-block d-lg-none">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                //Make a card for each one
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.AgendaName)</strong></h5>
+                    <div class="card-body">
+                        <figure class="row">
+                            <figcaption class="col">
+                                <p class="card-text">
+                                    @*Card Text goes Here*@
+                                <p class="card-text">
+                                        @*Card Text goes Here*@
+                                    <dl class="row lh-1">
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Member)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Member.FullName)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Description)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Description)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Comments)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Comments)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Completed)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Completed)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Meeting)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Meeting.MeetingTopicName)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                            Documents
+                                        </dt>
+                                        <dd class="col-9">
+                                                @{
+                                                    int fileCount = item.ActionDocuments.Count;
+                                                    if (fileCount > 0)
+                                                    {
+                                                        var firstFile = item.ActionDocuments.FirstOrDefault(); ;
+                                                        if (fileCount > 1)
+                                                        {
+                                                        <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(item.ID)" aria-expanded="false" aria-controls="collapseDocs@(item.ID)">
+                                                            <span class="badge badge-info">@fileCount</span> Documents...
+                                                        </a>
+                                                        <div class="collapse" id="collapseDocs@(item.ID)">
+                                                                @{
+                                                                    foreach (var d in item.ActionDocuments)
+                                                                    {
+                                                                    <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                                                    }
+                                                                }
+                                                        </div>
+                                                        }
+                                                        else
+                                                        {
+                                                        <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                                                        }
+                                                    }
+                                                }
+                                        </dd>
+                                    </dl>
+                                </p>
+                                </p>
+                            </figcaption>
+                        </figure>
+                        <div class="card-footer">
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor") || User.IsInRole("Staff"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.ID">Edit </a>
+                            }
+
+                            <a asp-action="Details" asp-route-id="@item.ID">View </a>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Remove" asp-route-id="@item.ID">Delete</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+<div class="d-none d-lg-block">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Member)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AgendaName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Comments)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Completed)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Meeting)
+                </th>
+                <th>
+                    Item Documents
+                </th>
+                <th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Member.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AgendaName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Comments)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Completed)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Meeting.MeetingTopicName)
+                    </td>
+                    <td>
+                        @{
+                            int fileCount = item.ActionDocuments.Count;
+                            if (fileCount > 0)
+                            {
+                                var firstFile = item.ActionDocuments.FirstOrDefault(); ;
+                                if (fileCount > 1)
+                                {
+                                    <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(item.ID)" aria-expanded="false" aria-controls="collapseDocs@(item.ID)">
+                                        <span class="badge badge-info">@fileCount</span> Documents...
+                                    </a>
+                                    <div class="collapse" id="collapseDocs@(item.ID)">
+                                        @{
+                                            foreach (var d in item.ActionDocuments)
+                                            {
+                                                <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                            }
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                                }
+                            }
+                        }
+                    </td>
+                    <td>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor") || User.IsInRole("Staff"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.ID">Edit </a>
+                        }
+
+                        <a asp-action="Details" asp-route-id="@item.ID">View </a>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Remove" asp-route-id="@item.ID">Delete</a>
+                        }                    
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+    <partial name="_PagingNavBar" />
+</form>

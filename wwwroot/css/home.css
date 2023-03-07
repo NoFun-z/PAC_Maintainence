@@ -1,0 +1,62 @@
+﻿.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
+    padding: 20px 100px;
+}
+
+body {
+    background-image: url("../Images/landing-page.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+    body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.2); /* change the color and opacity as desired */
+        z-index: -1; /* change the z-index value to move the layer behind or in front of other elements */
+    }
+
+h1 {
+    color: #fff;
+    font-weight: bolder;
+    text-decoration: underline;
+    text-decoration-color: #0073cf;
+    text-decoration-thickness: 14px;
+}
+
+.link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #0073cf;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    transition: all 0.3s ease-in-out;
+}
+
+    .link:hover {
+        background-color: #155d97;
+        color: #fff;
+        transform: scale(1.05);
+    }
+
+    .link img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .link h2 {
+        margin: 0;
+        font-size: 1.5em;
+    }

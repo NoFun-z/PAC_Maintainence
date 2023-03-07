@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NiagaraCollegeProject</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/NiagaraCollegeProject.styles.css" asp-append-version="true" />
+    <script src="https://kit.fontawesome.com/1d19684a0b.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <link rel="manifest" href="~/manifest.json" />
+    <script>
+        $(document).ready(function () {
+            $(".hamburger").click(function () {
+                $(".wrapper").toggleClass("active")
+                $(".content").toggleClass("open")
+
+            })
+        });
+    </script>
+
+</head>
+
+<body>
+
+
+    <div>
+        <div class="wrapper">
+
+            <div class="nav_top">
+                <div class="logo">
+                    <a asp-controller="Home" asp-action="Index">
+                        <img href="/" src="~/Images/nc-logo.svg" width="250" height="70" />
+                    </a>
+
+                </div>
+                <div class="menu_top">
+                    <div class="top_button">
+                        <div class="icon_wrap">
+                            <div class="icon">
+                                <div><partial name="_LoginPartial" /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor") || User.IsInRole("Staff"))
+            {
+                <div class="sidebar_main">
+
+                    <div class="menu_sidebar">
+                        <div class="inner__menu_sidebar">
+                            <ul>
+                                <li>
+                                    <a href="/Members">
+                                        <span class="icon"><i class="fa-solid fa-people-group"></i></span>
+                                        <span class="list">Members</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/Meetings">
+                                        <span class="icon"><i class="fa-solid fa-handshake"></i></span>
+                                        <span class="list">Meetings</span>
+                                    </a>
+                                </li>
+                                @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                {
+                                    <li>
+                                        <a href="/PACs">
+                                            <span class="icon"><i class="fa-solid fa-graduation-cap"></i></span>
+                                            <span class="list">PACs</span>
+                                        </a>
+                                    </li>
+                                }
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li>
+                                        <a href="/TeamMembers">
+                                            <span class="icon"><i class="fa-solid fa-gear"></i></span>
+                                            <span class="list">Maintain Accounts</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/ArchivedData">
+                                            <span class="icon"><i class="fa-solid fa-gear"></i></span>
+                                            <span class="list">Accounts Archive</span>
+                                        </a>
+                                    </li>
+                                }
+                                <li>
+                                    <a href="/ActionItems">
+                                        <span class="icon"><i class="fa-solid fa-list-check"></i></span>
+                                        <span class="list">My Tasks</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/Reports">
+                                        <span class="icon"><i class="fa-solid fa-handshake"></i></span>
+                                        <span class="list">Reports</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/AgendaItems">
+                                        <span class="icon"><i class="fa-solid fa-list-check"></i></span>
+                                        <span class="list">Agenda Items</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div class="hamburger">
+                                <div class="inner_hamburger">
+                                    <span class="arrow">
+                                        <i class="fas fa-long-arrow-alt-left"></i>
+                                        <i class="fas fa-long-arrow-alt-right"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="container content">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

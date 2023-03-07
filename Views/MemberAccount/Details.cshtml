@@ -1,0 +1,217 @@
+﻿@model NiagaraCollegeProject.ViewModels.MemberVM
+
+@{
+    ViewData["Title"] = "Account Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Member</h4>
+    <hr />
+    <div class="alert alert-danger" style="display: none;">
+        <strong>Note:</strong>
+        <ul id="errorMessage"></ul>
+    </div>
+    <dl class="row">
+        @{
+            if(Model.MemberPhoto?.Content != null)
+            {
+                @:<div>
+                    string imageBase64 = Convert.ToBase64String(Model.MemberPhoto.Content);
+                    string imageSrc = string.Format("data:" + Model.MemberPhoto.MimeType + ";base64, {0}", imageBase64);
+                    <img src="@imageSrc" alt="The profile picture of @Model.FullName" title="The profile picture of @Model.FullName" class="img-fluid rounded"/>
+                @:</div><hr />
+            }
+        }
+        <div class="MemberPersonalInformation">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Salutation)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Salutation.SalutationTitle)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.FirstName)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.FirstName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.LastName)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.LastName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PhoneNumber)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PhoneNumber)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Email)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Email)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.EducationSummary)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.EducationSummary)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.OccupationalSummary)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.OccupationalSummary)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.StreetAddress)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.StreetAddress)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Province)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Province)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.City)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.City)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PostalCode)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PostalCode)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.MemberStatus)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.MemberStatus)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.NCGraduate)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.NCGraduate)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.SignUpDate)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.SignUpDate)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ReNewDate_)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ReNewDate_)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.RenewalDueBy)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.RenewalDueBy)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.NumberOfPushSubscriptions)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.NumberOfPushSubscriptions)
+            </dd>
+        </div>
+        <div class="MemberCompanyInformation">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CompanyName)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CompanyName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CompanyStreetAddress)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CompanyStreetAddress)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CompanyProvince)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CompanyProvince)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CompanyCity)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CompanyCity)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CompanyPostalCode)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CompanyPostalCode)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CompanyPhoneNumber)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CompanyPhoneNumber)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CompanyEmail)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CompanyEmail)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CompanyPositionTitle)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CompanyPositionTitle)
+            </dd>
+        </div>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PreferredContact)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PreferredContact)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AcademicDivision)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AcademicDivision.DivisionName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PAC)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PAC.PACName)
+        </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.NumberOfPushSubscriptions)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.NumberOfPushSubscriptions)
+            </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
+    <a asp-action="Push" asp-route-MemberID="@Model.ID">Notifications on this Device</a>
+</div>
+@section Scripts {
+    <script>
+        //Vapid public key.
+        var applicationServerPublicKey = '@ViewBag.PublicKey';
+    </script>
+    <script src="~/js/CheckSubscription.js"></script>
+}

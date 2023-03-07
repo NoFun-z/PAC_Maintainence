@@ -1,0 +1,32 @@
+﻿@model NiagaraCollegeProject.Models.MeetingAttendees
+
+@{
+    ViewData["Title"] = "Add Attendee";
+}
+
+<h4>Add Attendee for Meeting: @ViewData["MeetingTopicName"]</h4>
+<hr />
+<form asp-action="Add">
+    <input type="hidden" name="MeetingID" value="@Model.MeetingID" />
+    <input type="hidden" name="MeetingTopicName" value="@ViewData["MeetingTopicName"]" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="MeetingID" class="control-label"></label>
+                <select disabled asp-for="MeetingID" class="form-control" asp-items="ViewBag.MeetingID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="MemberID" class="control-label"></label>
+                <select asp-for="MemberID" class="form-control" asp-items="ViewBag.MemberID"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+<div>
+    <a href='@ViewData["returnURL"]'>Back to Meeting</a>
+</div>
+

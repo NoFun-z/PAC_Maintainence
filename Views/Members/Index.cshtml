@@ -1,0 +1,258 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.Member>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Members Page</h1>
+
+@*Populate Pac ddl with related division fk*@
+@*<script type="text/jscript">
+    $(function () {
+        $(document).ready(function () {
+            $.getJSON('/Members/GetPacList/' + $('#divisionfilter').val(), function (data) {
+                var items = '';
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#pacfilter').html(items);
+            });
+        });
+    });
+</script>*@
+
+<script type="text/jscript">
+    $(function () {
+        $('#divisionfilter').change(function () {
+            $.getJSON('/Members/GetPacList/' + $('#divisionfilter').val(), function (data) {
+                var items = '';
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#pacfilter').html(items);
+            });
+        });
+    });
+</script>
+
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <div class="form-horizontal">
+        <button class="btn @(ViewData["Filtering"])" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+            Filter/Search
+        </button>
+        <div class="collapse" id="collapseFilter">
+            <div class="card card-body bg-light">
+                <div class="row">
+                    <div class="d-block d-lg-none">
+                        <div class="form-group">
+                            <label class="control-label">Sort By:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" class="" value="desc"
+                                               @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+                                               name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+                                    </div>
+                                </div>
+                                <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Search Member Name:</label>
+                        @Html.TextBox("SearchString", null, new { @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by Division:</label>
+                        @Html.DropDownList("AcademicDivisionID", null, "All Divisions", htmlAttributes: new {@id = "divisionfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by PAC:</label>
+                        @Html.DropDownList("PACID", null, "All PACs", htmlAttributes: new {@id = "pacfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4 align-self-end">
+                        <input type="submit" name="submitButton" value="Apply" class="btn btn-outline-primary" />
+                        <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="container-fluid d-block d-lg-none">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.FullName)</strong></h5>
+                    <div class="card-body">
+                        <figure class="row">
+                            <figcaption class="col">
+                                <p class="card-text">
+                                    @*Card Text goes Here*@
+                                <p class="card-text">
+                                        @*Card Text goes Here*@
+                                    <dl class="row lh-1">
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.PhoneNumber)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.PhoneNumber)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Email)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Email)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.MemberStatus)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.MemberStatus)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.PAC)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.PAC.PACName)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                            Documents
+                                        </dt>
+                                        <dd class="col-9">
+                                                @{
+                                                    int fileCount = item.MemberDocuments.Count;
+                                                    if (fileCount > 0)
+                                                    {
+                                                        var firstFile = item.MemberDocuments.FirstOrDefault(); ;
+                                                        if (fileCount > 1)
+                                                        {
+                                                        <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(item.ID)" aria-expanded="false" aria-controls="collapseDocs@(item.ID)">
+                                                            <span class="badge badge-info">@fileCount</span> Documents...
+                                                        </a>
+                                                        <div class="collapse" id="collapseDocs@(item.ID)">
+                                                                @{
+                                                                    foreach (var d in item.MemberDocuments)
+                                                                    {
+                                                                    <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                                                    }
+                                                                }
+                                                        </div>
+                                                        }
+                                                        else
+                                                        {
+                                                        <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                                                        }
+                                                    }
+                                                }
+                                        </dd>
+                                    </dl>
+                                </p>
+                                </p>
+                            </figcaption>
+                        </figure>
+                        <div class="card-footer">
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.ID">Edit </a>
+                            }
+                            <a asp-action="Details" asp-route-id="@item.ID">Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+    <div class="container-fluid d-block">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; btn:hover{color: #e0e2e4}" value="Members ↕" class="btn" />
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PhoneNumber)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Email)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.MemberStatus)
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; btn:hover{color: #e0e2e4}" value="PAC ↕" class="btn" />
+                    </th>
+                    <th>
+                        Supporting Documents
+                    </th>
+                    <th>
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FullName)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PhoneNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MemberStatus)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PAC.PACName)
+                        </td>
+                        <td>
+                            @{
+                                int fileCount = item.MemberDocuments.Count;
+                                if (fileCount > 0)
+                                {
+                                    var firstFile = item.MemberDocuments.FirstOrDefault(); ;
+                                    if (fileCount > 1)
+                                    {
+                                        <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(item.ID)" aria-expanded="false" aria-controls="collapseDocs@(item.ID)">
+                                            <span class="badge badge-info">@fileCount</span> Documents...
+                                        </a>
+                                        <div class="collapse" id="collapseDocs@(item.ID)">
+                                            @{
+                                                foreach (var d in item.MemberDocuments)
+                                                {
+                                                    <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                                    }
+                                }
+                            }
+                        </td>
+                        <td>
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.ID">Edit </a>
+                            }
+                            <a asp-action="Details" asp-route-id="@item.ID">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_PagingNavBar" />
+</form>

@@ -1,0 +1,108 @@
+﻿@model NiagaraCollegeProject.Models.ActionItem
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ActionItem</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <label asp-for="MemberID" class="control-label">Member</label>
+                <select asp-for="MemberID" id="MemberID"class="form-control" asp-items="ViewBag.MemberID"></select>
+                <span asp-validation-for="MemberID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AgendaName" class="control-label"></label>
+                @Html.EditorFor(model => model.AgendaName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Agenda for Meeting #X"}})
+                <span asp-validation-for="AgendaName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                @Html.EditorFor(model => model.Description, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Analyze and report sales"}})
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Comments" class="control-label"></label>
+                @{
+                    <td><textarea class="form-control" style="height: 120px; width: 320px" id="Comments" name="Comments" placeholder="Write some comments here (optional)"></textarea></td>
+                }
+                <span asp-validation-for="Comments" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Completed" /> @Html.DisplayNameFor(model => model.Completed)
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> Current Documents:</label>
+                <div class="ml-md-3">
+                    @{
+                        int fileCount = Model.ActionDocuments.Count;
+                        if (fileCount > 0)
+                        {
+                            var firstFile = Model.ActionDocuments.FirstOrDefault(); ;
+                            if (fileCount > 1)
+                            {
+                                <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(Model.ID)" aria-expanded="false" aria-controls="collapseDocs@(Model.ID)">
+                                    <span class="badge badge-info">@fileCount</span> Current Documents...
+                                </a>
+                                <div class="collapse" id="collapseDocs@(Model.ID)">
+                                    @{
+                                        foreach (var d in Model.ActionDocuments)
+                                        {
+                                            <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                        }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label custom-file-label">Upload Additional Documents:</label>
+                <div class="input-group mb-3">
+                    <input type="file" class="form-control" name="theFiles" multiple="multiple">
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="MeetingID" class="control-label"></label>
+                <select asp-for="MeetingID" id="MeetingID"class="form-control" asp-items="ViewBag.MeetingID"></select>
+                <span asp-validation-for="MeetingID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+        <link rel="stylesheet" href="~/css/SearchableDDL.css" />
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script type="text/jscript">
+        $(function ()
+        {
+            $("#MemberID").select2();
+            $("#MeetingID").select2();
+        });
+    </script>
+}
