@@ -3,3 +3,5 @@ Update-Database -Context ApplicationDbContext
 
 Add-Migration -Context PAC_Context -o Data\PAC_ContextMigrations Initial
 Update-Database -Context PAC_Context
+
+Loc betch
