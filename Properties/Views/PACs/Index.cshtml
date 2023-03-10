@@ -1,0 +1,83 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.PAC>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>PACs</h1>
+
+<p>
+    <a asp-action="Create">Add New PAC</a>
+</p>
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+        <br />
+    <div class="container-fluid d-block d-lg-none">
+        <div class="row">
+		@foreach (var item in Model)
+        {
+            //Make a card for each one
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.PACName)</strong></h5>
+                    <div class="card-body">
+                        <figure class="row">
+                            <figcaption class="col">
+                                <p class="card-text">
+                                    @*Card Text goes Here*@
+                                <p class="card-text">
+                                        @*Card Text goes Here*@
+                                    <dl class="row lh-1">
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.AcademicDivision)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.AcademicDivision.DivisionName)
+                                        </dd>
+                                    </dl>
+                                </p>
+                                </p>
+                            </figcaption>
+                        </figure>
+                        <div class="card-footer">
+                            <a asp-action="Edit" asp-route-id="@item.ID">Edit</a>
+                        </div>
+                    </div>
+                </div>
+		}
+        </div>
+
+    </div>
+<div class="d-none d-lg-block">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <input type="submit" name="actionButton" value="PAC ↕" class="btn" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" />
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().AcademicDivision.DivisionName)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PACName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AcademicDivision.DivisionName)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+    <partial name="_PagingNavBar" />
+</form>

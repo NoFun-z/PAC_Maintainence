@@ -1,0 +1,36 @@
+﻿@model NiagaraCollegeProject.Models.PAC
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create PAC</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="PACName" class="control-label"></label>
+                @Html.EditorFor(model => model.PACName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: SoftWare Engineer"}})
+                <span asp-validation-for="PACName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AcademicDivisionID" class="control-label"></label>
+                <select asp-for="AcademicDivisionID" class="form-control" asp-items="ViewBag.AcademicDivisionID"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a href='@ViewData["returnURL"]'>Back to PACs List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
