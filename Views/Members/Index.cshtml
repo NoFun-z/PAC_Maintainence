@@ -1,0 +1,433 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.Member>
+@{
+    ViewData["Title"] = "Index";
+}
+
+@if (User.IsInRole("Admin"))
+{
+    <h1>Maintain Accounts</h1>
+}
+@if (User.IsInRole("Supervisor"))
+{
+    <h1>Edit Members' information'</h1>
+}
+<br />
+
+<a id="btn_Download" style="color: #1B638C; padding: 8px 16px; font-weight: bold; border-radius: 6px;"
+   asp-action="DownloadReport" asp-controller="TeamMembers" class="btn btn-info float-end">Download Members Report</a>
+
+<style>
+
+    table tbody tr {
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .Acc_Roles {
+        background-color: #5AC9DA;
+        color: darkslategrey;
+        font-weight: bold;
+        border: #426F76;
+        border-radius: 6px;
+        padding: 8px 16px;
+        text-decoration: none;
+        margin: 10px 5px;
+    }
+
+        .Acc_Roles:hover {
+            background-color: lightgreen
+        }
+
+    .Acc_Details {
+        background-color: #5585AD;
+        color: white;
+        font-weight: bold;
+        border: #477499;
+        border-radius: 6px;
+        padding: 8px 12px;
+        text-decoration: none;
+        margin: 10px 5px;
+    }
+
+        .Acc_Details:hover {
+            background-color: #83C6FE;
+        }
+
+    .Web_Push {
+        background-color: #08A732;
+        color: white;
+        font-weight: bold;
+        border: #156741;
+        border-radius: 6px;
+        padding: 8px 16px;
+        text-decoration: none;
+        margin-left: 12px;
+    }
+
+        .Web_Push:hover {
+            background-color: #10712A;
+        }
+
+    .btn_Create {
+        background-color: #08A732;
+        color: white;
+        font-weight: bold;
+        border: #156741;
+        border-radius: 6px;
+        padding: 8px 16px;
+        text-decoration: none;
+        margin-left: 12px;
+    }
+
+        .btn_Create:hover {
+            background-color: #10712A;
+            color: white;
+        }
+
+    .btn_Filter {
+        margin-left: 12px;
+        margin-top: 1rem;
+    }
+
+    .Acc_Edit {
+        background-color: #5AC9DA;
+        color: darkslategrey;
+        font-weight: bold;
+        border: #426F76;
+        border-radius: 6px;
+        padding: 8px 12px;
+        text-decoration: none;
+        margin: 10px 5px;
+    }
+
+        .Acc_Edit:hover {
+            background-color: lightgreen
+        }
+
+    .Acc_Arc {
+        background-color: #D3E345;
+        color: darkslategrey;
+        font-weight: bold;
+        border: #A4B038;
+        border-radius: 6px;
+        padding: 8px 16px;
+        text-decoration: none;
+        margin: 10px 5px;
+    }
+
+        .Acc_Arc:hover {
+            background-color: #F0FF63
+        }
+
+</style>
+
+@*Populate Pac ddl with related division fk*@
+@*<script type="text/jscript">
+    $(function () {
+        $(document).ready(function () {
+            $.getJSON('/Members/GetPacList/' + $('#divisionfilter').val(), function (data) {
+                var items = '';
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#pacfilter').html(items);
+            });
+        });
+    });
+</script>*@
+
+<script type="text/jscript">
+    $(function () {
+        $('#divisionfilter').change(function () {
+            $.getJSON('/Members/GetPacList/' + $('#divisionfilter').val(), function (data) {
+                var items = '';
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#pacfilter').html(items);
+            });
+        });
+    });
+</script>
+
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a id="btn_Create" class="btn_Create" asp-controller="TeamMembers" asp-action="Create">Create new Account</a>
+    </p>
+}
+
+@if (User.IsInRole("Admin"))
+{
+    <form class="bkgAcc" asp-action="InsertFromExcel" asp-controller="TeamMembers" method="post" enctype="multipart/form-data">
+        <div style="margin-top: 10px" class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <h6 style="color: white;">Bulk Upload Members from excel:</h6>
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" name="theExcel" id="theExcel">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Upload Data" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+        <div class="text-danger">@TempData["message"]</div>
+    </form>
+}
+
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <div class="form-horizontal">
+        <button style="color: white; font-weight: bolder;" class="btn @(ViewData["Filtering"]) btn_Filter" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+            Filter/Search
+        </button>
+        <div class="collapse" id="collapseFilter">
+            <div class="card card-body bg-light">
+                <div class="row">
+                    <div class="d-block d-lg-none">
+                        <div class="form-group">
+                            <label class="control-label">Sort By:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" class="" value="desc"
+                                               @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+                                               name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+                                    </div>
+                                </div>
+                                <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Search Member Name:</label>
+                        @Html.TextBox("SearchString", null, new { @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by School:</label>
+                        @Html.DropDownList("AcademicDivisionID", null, "All Schools", htmlAttributes: new {@id = "divisionfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by PAC:</label>
+                        @Html.DropDownList("PACID", null, "All PACs", htmlAttributes: new {@id = "pacfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4 align-self-end">
+                        <input type="submit" name="submitButton" value="Apply" class="btn btn-outline-primary" />
+                        <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="container-fluid d-block d-lg-none">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.FullName)</strong></h5>
+                    <div class="card-body">
+                        <figure class="row">
+                            <figcaption class="col">
+                                <p class="card-text">
+                                    @*Card Text goes Here*@
+                                <p class="card-text">
+                                        @*Card Text goes Here*@
+                                    <dl class="row lh-1">
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.PhoneNumber)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.PhoneNumber)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Email)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Email)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.MemberStatus)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.MemberStatus)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.PAC)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.PAC.PACName)
+                                        </dd>
+                                            @*
+                                    <dt class="col-3 text-truncate">
+                                    Documents
+                                    </dt>
+                                    <dd class="col-9">
+                                    @{
+                                    int fileCount = item.MemberDocuments.Count;
+                                    if (fileCount > 0)
+                                    {
+                                    var firstFile = item.MemberDocuments.FirstOrDefault(); ;
+                                    if (fileCount > 1)
+                                    {
+                                    <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(item.ID)" aria-expanded="false" aria-controls="collapseDocs@(item.ID)">
+                                    <span class="badge badge-info">@fileCount</span> Documents...
+                                    </a>
+                                    <div class="collapse" id="collapseDocs@(item.ID)">
+                                    @{
+                                    foreach (var d in item.MemberDocuments)
+                                    {
+                                    <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                    }
+                                    }
+                                    </div>
+                                    }
+                                    else
+                                    {
+                                    <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                                    }
+                                    }
+                                    }
+                                    </dd>
+                                    *@
+                                    </dl>
+
+                            </figcaption>
+                        </figure>
+                        <div class="card-footer">
+                            <a class="Acc_Edit " asp-action="Edit" asp-route-id="@item.ID">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.ID">Details</a>
+                            <a class="" asp-controller="TeamMembers" asp-action="Edit" asp-route-id="@item.ID">Edit Roles</a>
+                            <a class="Acc_Arc" asp-controller="TeamMembers" asp-action="Archive" asp-route-id="@item.ID">Archive</a>
+                            @if (item.NumberOfPushSubscriptions > 0)
+                            {
+                                @:| @{
+                                                        <a asp-controller="WebPush" asp-action="Send" asp-route-id="@item.ID">Send Notification</a>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+    <div class="container-fluid d-block">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; btn:hover{color: #e0e2e4}" value="First Name ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; btn:hover{color: #e0e2e4}" value="Last Name ↕" class="btn" />
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PhoneNumber)
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; btn:hover{color: #e0e2e4}" value="Email ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; btn:hover{color: #e0e2e4}" value="Active Status ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; btn:hover{color: #e0e2e4}" value="PAC ↕" class="btn" />
+                    </th>
+                    @*
+                    <th>
+                    Supporting Documents
+                    </th>
+                    *@
+                    @*                    @if (User.IsInRole("Admin"))
+                    {
+                    <th>
+                    User Roles
+                    </th>
+                    }*@
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PersonalPhoneFormatted)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td style="text-align:center;">
+                            @Html.DisplayFor(modelItem => item.MemberStatus)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PAC.PACName)
+                        </td>
+                        @*                        @if (User.IsInRole("Admin"))
+                    {
+                    @foreach (var m in ViewData["MemberWithRoles"] as )
+                    {
+
+                    }
+                    }*@
+                        @*
+                    <td>
+                    @{
+                    int fileCount = item.MemberDocuments.Count;
+                    if (fileCount > 0)
+                    {
+                    var firstFile = item.MemberDocuments.FirstOrDefault(); ;
+                    if (fileCount > 1)
+                    {
+                    <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(item.ID)" aria-expanded="false" aria-controls="collapseDocs@(item.ID)">
+                    <span class="badge badge-info">@fileCount</span> Documents...
+                    </a>
+                    <div class="collapse" id="collapseDocs@(item.ID)">
+                    @{
+                    foreach (var d in item.MemberDocuments)
+                    {
+                    <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                    }
+                    }
+                    </div>
+                    }
+                    else
+                    {
+                    <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                    }
+                    }
+                    }
+                    </td>
+                    *@
+                        <td>
+                            <a class="Acc_Edit" asp-action="Edit" asp-route-id="@item.ID">✒️</a>
+                            <a class="Acc_Details" asp-action="Details" asp-route-id="@item.ID">🔍</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="Acc_Roles" asp-controller="TeamMembers" asp-action="Edit" asp-route-id="@item.ID">Edit Roles</a>
+                                <a class="Acc_Arc" asp-controller="TeamMembers" asp-action="Archive" asp-route-id="@item.ID">Archive</a>
+                            }
+                            @if (item.NumberOfPushSubscriptions > 0)
+                            {
+                                @:| @{
+                                                        <a class="Web_Push" asp-controller="WebPush" asp-action="Send" asp-route-id="@item.ID">Send Notification</a>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_PagingNavBar" />
+</form>
