@@ -1,0 +1,214 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.MeetingAttendees>
+
+@{
+    ViewData["Title"] = "Meeting Attendees";
+    NiagaraCollegeProject.Models.Meeting meeting = (NiagaraCollegeProject.Models.Meeting)ViewBag.Meeting;
+}
+
+<div>
+    <h4>Meeting Details</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => meeting.MeetingTopicName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => meeting.MeetingTopicName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => meeting.MeetingStartTimeDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => meeting.MeetingStartTimeDate)
+        </dd>
+        <dt class="col-sm-2">
+            Recording Assistant
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => meeting.Member.FullName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => meeting.MeetingNotes)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => meeting.MeetingNotes)
+        </dd>
+    </dl>
+</div>
+
+@*<p>
+    <a asp-action="Create">Add members to a meeting</a>
+</p>*@
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <input type="hidden" name="MeetingID" value="@meeting.ID" />
+    <br />
+    <div class="container-fluid d-block d-lg-none">
+
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                //Make a card for each one
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.Meeting.MeetingTopicName)</strong></h5>
+                    <div class="card-body">
+                        <figure class="row">
+                            <figcaption class="col">
+                                <p class="card-text">
+                                    @*Card Text goes Here*@
+                                <p class="card-text">
+                                        @*Card Text goes Here*@
+                                    <dl class="row lh-1">
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Member)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Member.FullName)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Member.Email)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Member.Email)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Member.PhoneNumber)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Member.PhoneNumber)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Member.CompanyName)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Member.CompanyName)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Member.PAC)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Member.PAC.PACName)
+                                        </dd>
+                                    </dl>
+                                </p>
+                                </p>
+                            </figcaption>
+                        </figure>
+                        <div class="card-footer">
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.ID">Edit </a>
+                            }
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.ID">Delete </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="d-none d-lg-block">
+        <table class="table">
+            <thead>
+                <colgroup>
+                    <col span="1" />
+                    <col span="1" />
+                    <col span="1" />
+                    <col span="1" />
+                    <col span="1" />
+                    <col span="1" />
+                </colgroup>
+                <tr>
+                    <th>
+                        <input type="submit" name="actionButton" value="Members ↕" class="btn" style="color: black; font-weight: bold;" />
+                        @{
+                            int totalMembers = 0;
+                        }
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Member.Email)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Member.PhoneNumber)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Member.CompanyName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Member.PAC)
+                    </th>
+                    <th>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                        {
+                            <a asp-controller="MeetingAttendees" asp-action="Add" asp-route-MeetingID="@meeting.ID"
+                           asp-route-MeetingTopicName="@meeting.MeetingTopicName">
+                                <span class="btn btn-success" data-bs-toggle="tooltip"
+                                  title="Add Attendee"><strong>&#x271A; Add</strong></span>
+                            </a>
+                        }
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Member.FullName)
+                            @{
+                                totalMembers += 1;
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Member.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Member.PhoneNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Member.CompanyName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Member.PAC.PACName)
+                        </td>
+                        <td>
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                            {
+                                <a asp-controller="MeetingAttendees" asp-action="Edit" asp-route-id="@item.ID">
+                                    <span class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Edit Attendee">&#x270D;</span>
+                                </a>
+                            }
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-controller="MeetingAttendees" asp-action="Delete" asp-route-id="@item.ID">
+                                    <span class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Delete Attendee">&#x274C;</span>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td></td>
+                    <td align="right">
+                        Total Members:
+                    </td>
+                    <td>
+                        <strong>@totalMembers</strong>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <partial name="_PagingNavBar" />
+</form>
+<div>
+    <a asp-action="Edit" asp-controller="Meetings" asp-route-id="@meeting.ID">Edit</a> |
+    <a href='@ViewData["returnURL"]'>Back to Meeting List</a>
+</div>
