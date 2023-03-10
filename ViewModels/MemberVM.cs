@@ -18,7 +18,23 @@ namespace NiagaraCollegeProject.ViewModels
                     + " " + LastName;
             }
         }
+        public string PersonalPhoneFormatted
+        {
+            get
+            {
+                if (PhoneNumber == null) return "";
+                else return "(" + PhoneNumber.Substring(0, 3) + ") " + PhoneNumber.Substring(3, 3) + "-" + PhoneNumber[6..];
+            }
+        }
 
+        public string WorkPhoneFormatted
+        {
+            get
+            {
+                if (CompanyPhoneNumber == null) return "";
+                else return "(" + CompanyPhoneNumber.Substring(0, 3) + ") " + CompanyPhoneNumber.Substring(3, 3) + "-" + CompanyPhoneNumber[6..];
+            }
+        }
         public string MemberFormattedAddress
         {
             get
@@ -107,6 +123,7 @@ namespace NiagaraCollegeProject.ViewModels
         }
 
         private DateTime ReNewDate { get; set; }
+
         public DateTime ReNewDate_
         {
             get { return ReNewDate; }

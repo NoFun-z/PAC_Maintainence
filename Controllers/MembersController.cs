@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,18 +13,27 @@ using Microsoft.EntityFrameworkCore.Storage;
 using NiagaraCollegeProject.Data;
 using NiagaraCollegeProject.Models;
 using NiagaraCollegeProject.Utilities;
+using NiagaraCollegeProject.ViewModels;
 using NuGet.Protocol.Plugins;
 
 namespace NiagaraCollegeProject.Controllers
 {
-    [Authorize(Roles = "Admin, Supervisor, Staff")]
+    [Authorize(Roles = "Admin, Supervisor")]
     public class MembersController : Controller
     {
         private readonly PAC_Context _context;
+        private readonly ApplicationDbContext _identityContext;
+        private readonly IMyEmailSender _emailSender;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public MembersController(PAC_Context context)
+        public MembersController(PAC_Context context,
+            ApplicationDbContext identityContext, IMyEmailSender emailSender,
+            UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _identityContext = identityContext;
+            _emailSender = emailSender;
+            _userManager = userManager;
         }
 
         // GET: Members
@@ -50,7 +60,7 @@ namespace NiagaraCollegeProject.Controllers
 
             //List of sort options.
             //NOTE: make sure this array has matching values to the column headings
-            string[] sortOptions = new[] { "Members ↕", "PAC ↕" };
+            string[] sortOptions = new[] { "First Name ↕", "Last Name ↕", "PAC ↕", "Email ↕", "Active Status ↕" };
 
             if (AcademicDivisionID.HasValue)
             {
@@ -89,7 +99,7 @@ namespace NiagaraCollegeProject.Controllers
             }
 
             //Now we know which field and direction to sort by
-            if (sortField == "Members ↕")
+            if (sortField == "Last Name ↕")
             {
                 if (sortDirection == "asc")
                 {
@@ -102,6 +112,21 @@ namespace NiagaraCollegeProject.Controllers
                     PAC_Context = PAC_Context
                         .OrderByDescending(p => p.LastName)
                         .ThenByDescending(p => p.FirstName);
+                }
+            }
+            else if (sortField == "First Name ↕")
+            {
+                if (sortDirection == "asc")
+                {
+                    PAC_Context = PAC_Context
+                        .OrderBy(p => p.FirstName)
+                        .ThenBy(p => p.LastName);
+                }
+                else
+                {
+                    PAC_Context = PAC_Context
+                        .OrderByDescending(p => p.FirstName)
+                        .ThenByDescending(p => p.LastName);
                 }
             }
             else if (sortField == "PAC ↕")
@@ -117,11 +142,35 @@ namespace NiagaraCollegeProject.Controllers
                         .OrderBy(p => p.PAC.PACName);
                 }
             }
+            else if (sortField == "Email ↕")
+            {
+                if (sortDirection == "asc")
+                {
+                    PAC_Context = PAC_Context
+                        .OrderBy(p => p.Email);
+                }
+                else
+                {
+                    PAC_Context = PAC_Context
+                        .OrderByDescending(p => p.Email);
+                }
+            }
+            else if (sortField == "Active Status ↕")
+            {
+                if (sortDirection == "asc")
+                {
+                    PAC_Context = PAC_Context
+                        .OrderByDescending(p => p.MemberStatus);
+                }
+                else
+                {
+                    PAC_Context = PAC_Context
+                        .OrderBy(p => p.MemberStatus);
+                }
+            }
 
 
-            string memCommittee = "";
-            memCommittee = PAC_Context.Where(e => e.Email == User.Identity.Name).FirstOrDefault().AcademicDivision.DivisionName;
-            var filteredMembers = PAC_Context.Where(e => e.AcademicDivision.DivisionName == memCommittee);
+           
 
             //Set sort for next time
             ViewData["sortField"] = sortField;
@@ -142,10 +191,63 @@ namespace NiagaraCollegeProject.Controllers
             {
                 pagedData = await PaginatedList<Member>.CreateAsync(PAC_Context.AsNoTracking(), page ?? 1, pageSize);
             }
-            if (User.IsInRole("Staff"))
+
+            var MemWithRoles = await _context.Members
+                .Include(m => m.Subscriptions)
+                .Include(m => m.ActionItems)
+                .Include(m => m.AcademicDivision)
+                .Include(m => m.Salutation)
+                .Include(d => d.MemberDocuments)
+                .Select(e => new MemberAdminVM
+                {
+                    ID = e.ID,
+                    FirstName = e.FirstName,
+                    LastName = e.LastName,
+                    PhoneNumber = e.PhoneNumber,
+                    Email = e.Email,
+                    EducationSummary = e.EducationSummary,
+                    OccupationalSummary = e.OccupationalSummary,
+                    StreetAddress = e.StreetAddress,
+                    Province = (MemberVM.Provinces)e.Province,
+                    City = e.City,
+                    PostalCode = e.PostalCode,
+                    MemberStatus = e.MemberStatus,
+                    IsArchived = e.IsArchived,
+                    NCGraduate = e.NCGraduate,
+                    SignUpDate = e.SignUpDate,
+                    ReNewDate_ = e.ReNewDate_,
+                    RenewalDueBy = e.RenewalDueBy,
+                    CompanyName = e.CompanyName,
+                    CompanyStreetAddress = e.CompanyStreetAddress,
+                    CompanyProvince = (MemberVM.Provinces)e.CompanyProvince,
+                    CompanyCity = e.CompanyCity,
+                    CompanyPostalCode = e.CompanyPostalCode,
+                    CompanyPhoneNumber = e.CompanyPhoneNumber,
+                    CompanyEmail = e.CompanyEmail,
+                    PreferredContact = (MemberVM.Contact)e.PreferredContact,
+                    CompanyPositionTitle = e.CompanyPositionTitle,
+                    MemberDocuments = e.MemberDocuments,
+                    ActionItems = e.ActionItems,
+                    AcademicDivisionID = e.AcademicDivisionID,
+                    AcademicDivision = e.AcademicDivision,
+                    PACID = e.PACID,
+                    PAC = e.PAC,
+                    SalutationID = e.SalutationID,
+                    Salutation = e.Salutation,
+                    MemberPhoto = e.MemberPhoto,
+                    NumberOfPushSubscriptions = e.Subscriptions.Count
+                }).ToListAsync();
+
+            foreach (var e in MemWithRoles)
             {
-                pagedData = await PaginatedList<Member>.CreateAsync(filteredMembers.AsNoTracking(), page ?? 1, pageSize);              
-            }
+                var user = await _userManager.FindByEmailAsync(e.Email);
+                if (user != null)
+                {
+                    e.UserRoles = (List<string>)await _userManager.GetRolesAsync(user);
+                }
+            };
+
+            ViewData["MemberWithRoles"] = MemWithRoles;
 
             return View(pagedData);
         }

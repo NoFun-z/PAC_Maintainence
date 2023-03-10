@@ -48,6 +48,7 @@
             <div class="row">
             <div class="col-md-4">
             <input type="hidden" asp-for="ID" />
+
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Keanu"}})
@@ -131,7 +132,7 @@
         </form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Members" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

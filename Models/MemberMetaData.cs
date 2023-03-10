@@ -15,7 +15,23 @@ namespace NiagaraCollegeProject.Models
                     + " " + LastName;
             }
         }
+        public string PersonalPhoneFormatted
+        {
+            get
+            {
+                if (PhoneNumber == null) return "";
+                else return "(" + PhoneNumber.Substring(0, 3) + ") " + PhoneNumber.Substring(3, 3) + "-" + PhoneNumber[6..];
+            }
+        }
 
+        public string WorkPhoneFormatted
+        {
+            get
+            {
+                if (CompanyPhoneNumber == null) return "";
+                else return "(" + CompanyPhoneNumber.Substring(0, 3) + ") " + CompanyPhoneNumber.Substring(3, 3) + "-" + CompanyPhoneNumber[6..];
+            }
+        }
         public string MemberFormattedAddress
         {
             get
@@ -174,7 +190,7 @@ namespace NiagaraCollegeProject.Models
             Personal
         }
 
-        [Display(Name = "Preferred Contact")]
+        [Display(Name = "Preferred Email")]
         //[Required(ErrorMessage = "Please select a preferred contact method.")]
         public Contact PreferredContact { get; set; }
 
@@ -183,10 +199,10 @@ namespace NiagaraCollegeProject.Models
 
         [Display(Name = "Action Items")]
         public ICollection<ActionItem> ActionItems { get; set; } = new HashSet<ActionItem>();
-        [Display(Name = "AcademicDivisionID")]
+        [Display(Name = "School Name")]
         public int? AcademicDivisionID { get; set; }
 
-        [Display(Name = "Division Name")]
+        [Display(Name = "School Name")]
 
         public AcademicDivision AcademicDivision { get; set; }
 

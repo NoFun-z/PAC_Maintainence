@@ -73,7 +73,7 @@ namespace NiagaraCollegeProject.Controllers
         [Authorize(Roles = "Admin, Supervisor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,AgendaName,Description,Comments, Completed,MeetingID,MemberID")] ActionItem actionItem, List<IFormFile> theFiles)
+        public async Task<IActionResult> Create([Bind("ID,AgendaName,Description, TaskDueDate, Comments, Completed,MeetingID,MemberID")] ActionItem actionItem, List<IFormFile> theFiles)
         {
             if (ModelState.IsValid)
             {
@@ -116,7 +116,7 @@ namespace NiagaraCollegeProject.Controllers
         [Authorize(Roles = "Admin, Supervisor, Staff")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,AgendaName,Description,Comments,Completed,MeetingID,MemberID")] ActionItem actionItem, List<IFormFile> theFiles)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,AgendaName,Description,Comments,TaskDueDate,Completed,MeetingID,MemberID")] ActionItem actionItem, List<IFormFile> theFiles)
         {
             if (id != actionItem.ID)
             {

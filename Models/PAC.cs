@@ -14,10 +14,10 @@ namespace NiagaraCollegeProject.Models
         public string PACName { get; set; }
         public ICollection<Member> Members { get; set; } = new HashSet<Member>();
 
-        [Display(Name = "AcademicDivisionID")]
+        [Display(Name = "School Name")]
         public int AcademicDivisionID { get; set; }
 
-        [Display(Name = "AcademicDivision")]
+        [Display(Name = "School Name")]
         public AcademicDivision AcademicDivision { get; set; }
 
     }

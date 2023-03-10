@@ -4,40 +4,20 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Member Accounts</h1><br/>
+<h1>Maintain Accounts</h1>
+<br />
 
 <a style="color: #1B638C; padding: 8px 16px; font-weight: bold; border-radius: 6px;"
-asp-action="DownloadReport" class="btn btn-info float-end">Download Members Report</a>
+   asp-action="DownloadReport" class="btn btn-info float-end">Download Members Report</a>
 
 <style>
-    body {
-        background-image: url("../Images/Ghibli-bkg.jpg");
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
 
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.2); /* change the color and opacity as desired */
-            z-index: -1; /* change the z-index value to move the layer behind or in front of other elements */
-        }
-
-    h1{
-        color: white;
-        font-weight: bold;
-        text-shadow: -1px -1px 0 #0007, 1px -1px 0 #0007, -1px 1px 0 #0007, 1px 1px 0 #0007;
-    }
 
     table tbody tr {
         background-color: rgba(255, 255, 255, 0.8);
     }
 
-    .btn_Create{
+    .btn_Create {
         background-color: #08A732;
         color: white;
         font-weight: bold;
@@ -48,12 +28,12 @@ asp-action="DownloadReport" class="btn btn-info float-end">Download Members Repo
         margin: 10px 5px;
     }
 
-    .btn_Create:hover{
-        background-color: #10712A;
-        color: white;
-    }
+        .btn_Create:hover {
+            background-color: #10712A;
+            color: white;
+        }
 
-    .Acc_Edit{
+    .Acc_Edit {
         background-color: #5AC9DA;
         color: darkslategrey;
         font-weight: bold;
@@ -63,9 +43,10 @@ asp-action="DownloadReport" class="btn btn-info float-end">Download Members Repo
         text-decoration: none;
         margin: 10px 5px;
     }
-    .Acc_Edit:hover{
-        background-color: lightgreen
-    }
+
+        .Acc_Edit:hover {
+            background-color: lightgreen
+        }
 
     .Acc_Arc {
         background-color: #D3E345;
@@ -92,7 +73,7 @@ asp-action="DownloadReport" class="btn btn-info float-end">Download Members Repo
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
-                    <label style="font-weight: bold; color: white;" class="control-label custom-file-label">Bulk Upload Members from excel:</label>
+                    <h6>Bulk Upload Members from excel:</h6>
                     <div class="input-group mb-3">
                         <input type="file" class="form-control" name="theExcel" id="theExcel">
                     </div>
@@ -119,12 +100,6 @@ asp-action="DownloadReport" class="btn btn-info float-end">Download Members Repo
                                     <p class="card-text">
                                             @*Card Text goes Here*@
                                         <dl class="row lh-1">
-                                            <dt class="col-3 text-truncate">
-                                                Committee
-                                            </dt>
-                                            <dd class="col-9">
-                                                    @Html.DisplayFor(modelItem => item.AcademicDivision.DivisionName)
-                                            </dd>
                                             <dt class="col-3 text-truncate">
                                                     @Html.DisplayNameFor(model => model.PAC)
                                             </dt>
@@ -162,7 +137,7 @@ asp-action="DownloadReport" class="btn btn-info float-end">Download Members Repo
                                                     @{
                                                         foreach (var r in item.UserRoles)
                                                         {
-                                                                                                                                                                                                @:  @r <br />
+                                                            @:  @r <br />
                                                         }
                                                     }
                                             </dd>
@@ -176,7 +151,7 @@ asp-action="DownloadReport" class="btn btn-info float-end">Download Members Repo
                                 @if (item.NumberOfPushSubscriptions > 0)
                                 {
                                     @:| @{
-                                                                                                                                                                            <a asp-controller="WebPush" asp-action="Send" asp-route-id="@item.ID">Send Notification</a>
+                                        <a asp-controller="WebPush" asp-action="Send" asp-route-id="@item.ID">Send Notification</a>
                                     }
                                 }
                             </div>
@@ -192,9 +167,6 @@ asp-action="DownloadReport" class="btn btn-info float-end">Download Members Repo
                     <tr>
                         <th>
                             @Html.DisplayNameFor(model => model.FullName)
-                        </th>
-                        <th>
-                            Committee
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.PAC)
@@ -220,14 +192,12 @@ asp-action="DownloadReport" class="btn btn-info float-end">Download Members Repo
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        @if (!item.IsArchived){
+                        @if (!item.IsArchived)
+                        {
                             <tr>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.FullName)<br />
                                     Email: @Html.DisplayFor(modelItem => item.Email)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.AcademicDivision.DivisionName)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.PAC.PACName)
@@ -248,17 +218,17 @@ asp-action="DownloadReport" class="btn btn-info float-end">Download Members Repo
                                     @{
                                         foreach (var r in item.UserRoles)
                                         {
-                                                                                                                                                                                @:  @r <br />
+                                            @:  @r <br />
                                         }
                                     }
                                 </td>
                                 <td>
-                                    <a class="Acc_Edit" asp-action="Edit" asp-route-id="@item.ID">Edit</a> 
+                                    <a class="Acc_Edit" asp-action="Edit" asp-route-id="@item.ID">Edit</a>
                                     <a class="Acc_Arc" asp-action="Archive" asp-route-id="@item.ID">Archive</a>
                                     @if (item.NumberOfPushSubscriptions > 0)
                                     {
                                         @:| @{
-                                                                                                                                                                                <a asp-controller="WebPush" asp-action="Send" asp-route-id="@item.ID">Send Notification</a>
+                                            <a asp-controller="WebPush" asp-action="Send" asp-route-id="@item.ID">Send Notification</a>
                                         }
                                     }
                                 </td>

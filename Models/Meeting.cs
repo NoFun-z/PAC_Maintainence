@@ -33,7 +33,7 @@ namespace NiagaraCollegeProject.Models
 
         public Member Member { get; set; }
 
-        [Display(Name = "Divison")]
+        [Display(Name = "School Name")]
         public int? AcademicDivisionID { get; set; }
 
         public AcademicDivision AcademicDivision { get; set; }

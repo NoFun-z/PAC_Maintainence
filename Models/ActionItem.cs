@@ -22,6 +22,10 @@ namespace NiagaraCollegeProject.Models
         [StringLength(300, ErrorMessage = "Comments cannot be more than 300 characters long.")]
         public string Comments { get; set; }
 
+        [Required]
+        [Range(typeof(DateTime), "1/1/1900", "{0:MM/dd/yyyy}", ErrorMessage = "Invalid date")]
+        public DateTime TaskDueDate { get; set; }
+
         public bool Completed { get; set; }
 
         [Display(Name = "Action Item Document")]

@@ -26,7 +26,7 @@
 
 
     <div>
-        <div class="wrapper">
+        <div class="wrapper active">
 
             <div class="nav_top">
                 <div class="logo">
@@ -52,12 +52,24 @@
                     <div class="menu_sidebar">
                         <div class="inner__menu_sidebar">
                             <ul>
+                                @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                {
                                 <li>
                                     <a href="/Members">
                                         <span class="icon"><i class="fa-solid fa-people-group"></i></span>
                                         <span class="list">Members</span>
                                     </a>
                                 </li>
+                                }  
+                                @if (User.IsInRole("Admin")|| User.IsInRole("Supervisor"))
+                                {                                 
+                                    <li>
+                                        <a href="/ArchivedData">
+                                            <span class="icon"><i class="fa-solid fa-gear"></i></span>
+                                            <span class="list">Accounts Archive</span>
+                                        </a>
+                                    </li>
+                                }
                                 <li>
                                     <a href="/Meetings">
                                         <span class="icon"><i class="fa-solid fa-handshake"></i></span>
@@ -73,25 +85,10 @@
                                         </a>
                                     </li>
                                 }
-                                @if (User.IsInRole("Admin"))
-                                {
-                                    <li>
-                                        <a href="/TeamMembers">
-                                            <span class="icon"><i class="fa-solid fa-gear"></i></span>
-                                            <span class="list">Maintain Accounts</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="/ArchivedData">
-                                            <span class="icon"><i class="fa-solid fa-gear"></i></span>
-                                            <span class="list">Accounts Archive</span>
-                                        </a>
-                                    </li>
-                                }
                                 <li>
                                     <a href="/ActionItems">
                                         <span class="icon"><i class="fa-solid fa-list-check"></i></span>
-                                        <span class="list">My Tasks</span>
+                                        <span class="list">Tasks</span>
                                     </a>
                                 </li>
                                 <li>
@@ -122,7 +119,7 @@
                 </div>
             }
         </div>
-        <div class="container content">
+        <div class="container content open">
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NiagaraCollegeProject.ViewModels;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design;
 using System.Xml.Linq;
@@ -19,6 +20,23 @@ namespace NiagaraCollegeProject.Models
             }
         }
 
+        public string PersonalPhoneFormatted
+        {
+            get
+            {
+                if (PhoneNumber == null) return "";
+                else return "(" + PhoneNumber.Substring(0, 3) + ") " + PhoneNumber.Substring(3, 3) + "-" + PhoneNumber[6..];
+            }
+        }
+
+        public string WorkPhoneFormatted
+        {
+            get
+            {
+                if (CompanyPhoneNumber == null) return "";
+                else return "(" + CompanyPhoneNumber.Substring(0, 3) + ") " + CompanyPhoneNumber.Substring(3, 3) + "-" + CompanyPhoneNumber[6..];
+            }
+        }
         public string MemberFormattedAddress
         {
             get
@@ -160,7 +178,6 @@ namespace NiagaraCollegeProject.Models
         public Contact PreferredContact { get; set; }
 
         public string CompanyPositionTitle { get; set; }
-
         public bool IsArchived { get; set; }
 
         public ICollection<MemberDocuments> MemberDocuments { get; set; } = new HashSet<MemberDocuments>();
@@ -182,6 +199,8 @@ namespace NiagaraCollegeProject.Models
 
         public MemberPhoto MemberPhoto { get; set; }
 
+        [Display(Name = "Number of Notification Subscriptions")]
+        public int NumberOfPushSubscriptions { get; set; }
         public ICollection<Subscription> Subscriptions { get; set; } = new HashSet<Subscription>();
 
         //public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

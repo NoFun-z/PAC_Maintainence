@@ -4,14 +4,7 @@
 <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
 <div class="text-center">
 	<h1 class="display-4">PAC PROJECT</h1><br />
-	@if (User.IsInRole("Admin") || User.IsInRole("Supervisor") || User.IsInRole("Staff"))
-	{
 		<p style="color: #fff; font-weight: bold;">Please follow the descriptions on the navigation link bellow to continue your operation </p>
-	}
-	else
-	{
-		<p style="color: #fff; font-weight: bold;">We are WebCraft, a team of committed individuals who create an effective and responsive website for you</p>
-	}
 </div>
 
 @if (User.IsInRole("Admin") || User.IsInRole("Supervisor") || User.IsInRole("Staff"))

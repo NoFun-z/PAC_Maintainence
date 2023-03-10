@@ -182,7 +182,7 @@ namespace NiagaraCollegeProject.Controllers
                     //Send Email to new Employee - commented out till email configured
                     //await InviteUserToResetPassword(member, null);
 
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Members");
                 }
             }
             catch (DbUpdateException dex)
@@ -243,7 +243,7 @@ namespace NiagaraCollegeProject.Controllers
             ViewData["AcademicDivisionID"] = new SelectList(_context.AcademicDivisions, "ID", "DivisionName", memberAdminVM.AcademicDivisionID);
             ViewData["SalutationID"] = new SelectList(_context.Salutations, "ID", "SalutationTitle", memberAdminVM.SalutationID);
 
-            return View(memberAdminVM);
+            return RedirectToAction("Index", "Members");
         }
 
         // GET: Members/Edit/5
@@ -387,7 +387,7 @@ namespace NiagaraCollegeProject.Controllers
                         }
                     }
 
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Members");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -457,7 +457,7 @@ namespace NiagaraCollegeProject.Controllers
             ViewData["AcademicDivisionID"] = new SelectList(_context.AcademicDivisions, "ID", "DivisionName", memberAdminVM.AcademicDivisionID);
             ViewData["SalutationID"] = new SelectList(_context.Salutations, "ID", "SalutationTitle", memberAdminVM.SalutationID);
 
-            return View(memberAdminVM);
+            return RedirectToAction("Index", "Members");
         }
 
         public JsonResult GetPacList(int Id)
@@ -635,7 +635,7 @@ namespace NiagaraCollegeProject.Controllers
 
             //var members = membe
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Members");
         }
 
         private async Task AddPicture(Member member, IFormFile thePicture)
@@ -1005,7 +1005,7 @@ namespace NiagaraCollegeProject.Controllers
                     //Send Email to new Employee - commented out till email configured
                     //await InviteUserToResetPassword(member, null);
 
-                    return RedirectToAction("Index", "TeamMembers");
+                    return RedirectToAction("Index", "Members");
                 }
             }
             catch (DbUpdateException dex)
@@ -1021,7 +1021,7 @@ namespace NiagaraCollegeProject.Controllers
             }
             //_context.Members.AddRange(MemberAccounts);
             //_context.SaveChanges();
-            return RedirectToAction("Index", "TeamMembers");
+            return RedirectToAction("Index", "Members");
         }
 
         // GET/POST: MedicalTrials/Notification/5

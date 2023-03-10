@@ -111,6 +111,9 @@ namespace NiagaraCollegeProject.Data.PAC_ContextMigrations
                     b.Property<int>("MemberID")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("TaskDueDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
@@ -343,6 +346,9 @@ namespace NiagaraCollegeProject.Data.PAC_ContextMigrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("NCGraduate")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("NumberOfPushSubscriptions")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("OccupationalSummary")

@@ -35,7 +35,7 @@
                         <strong>@Html.DisplayNameFor(model => model.FullName):</strong> @Html.DisplayFor(model => model.FullName)
                     </label>
                     <label class="col-sm-10">
-                        <strong>@Html.DisplayNameFor(model => model.PhoneNumber):</strong> @Html.DisplayFor(model => model.PhoneNumber)            
+                        <strong>@Html.DisplayNameFor(model => model.PhoneNumber):</strong> @Html.DisplayFor(model => model.PersonalPhoneFormatted)            
                     </label>
                     <label class="col-sm-10">
                         <strong>@Html.DisplayNameFor(model => model.Email):</strong> @Html.DisplayFor(model => model.Email)
@@ -90,7 +90,7 @@
                         <strong>@Html.DisplayNameFor(model => model.MemberStatus):</strong> @Html.DisplayFor(model => model.MemberStatus)
                     </label>
                      <label class="col-sm-10">
-                        <strong>Division:</strong> @Html.DisplayFor(model => model.AcademicDivision.DivisionName)
+                        <strong>School Name:</strong> @Html.DisplayFor(model => model.AcademicDivision.DivisionName)
                     </label>
                    
                     <label class="col-sm-10">
@@ -122,7 +122,7 @@
                     </label>
 
                     <label class="col-sm-10">
-                        <strong>@Html.DisplayNameFor(model => model.CompanyPhoneNumber):</strong> @Html.DisplayFor(model => model.CompanyPhoneNumber)
+                        <strong>@Html.DisplayNameFor(model => model.CompanyPhoneNumber):</strong> @Html.DisplayFor(model => model.WorkPhoneFormatted)
                     </label>
                  
                     <label class="col-sm-10">

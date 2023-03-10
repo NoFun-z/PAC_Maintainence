@@ -50,7 +50,7 @@ namespace NiagaraCollegeProject.Controllers
             member.MemberStatus = true;
 
             _context.SaveChanges();
-            return RedirectToAction("Index", "TeamMembers", new { id = member.ID });
+            return RedirectToAction("Index", "Members", new { id = member.ID });
         }
 
         // GET: Members/Delete/5
@@ -94,7 +94,7 @@ namespace NiagaraCollegeProject.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Members");
         }
     }
 }
