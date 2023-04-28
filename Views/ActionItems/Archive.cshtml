@@ -1,0 +1,63 @@
+﻿@model NiagaraCollegeProject.Models.ActionItem
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Confirm Archive</h1>
+
+<h3>Are you sure you want to Archive @Model.AgendaName?</h3>
+<div>
+    <h4>Action Item</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AgendaName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AgendaName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Comments)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Comments)
+        </dd>
+        <dt class="col-sm-2">
+            Due Date
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TaskDueDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Completed)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Completed)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Meeting)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Meeting.MeetingTopicName)
+        </dd>
+        <dt class="col-sm-2">
+            Assigned To
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Member.ID)
+        </dd>
+    </dl>
+
+    <form asp-action="Archive">
+        <input type="hidden" asp-for="ID" />
+        <input type="submit" value="Confirm" class="btn btn-danger" />
+        <a asp-controller="ActionItems" asp-action="Index" class="Back_btns">Cancel</a>
+    </form>
+</div>

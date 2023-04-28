@@ -1,0 +1,106 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+
+<style>
+	.container{
+		padding-top: 20px;
+	}
+</style>
+
+<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+<div class="text-center">
+	<h1 class="display-4" style="font-size: 28px; margin-top: 0px; padding-top: 0px; margin-bottom: 0px; padding-bottom: 5px">NIAGARA COLLEGE PAC APPLICATION</h1><br />
+		<p style="font-weight: bold; margin-bottom: 15px;">Please follow the descriptions on the navigation link bellow to continue your operation </p>
+	@if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+	{
+		<a class="btn btn-primary btn_Filter" style="text-decoration: none; margin-bottom: 20px" href="@Url.Action("DownloadFile", "Home", new { fileName = "../wwwroot/Images/Team-5_Help_Document.docx" })">Need help?</a>
+	}
+	@if (User.IsInRole("Staff"))
+	{
+		<a class="btn btn-primary btn_Filter" style="text-decoration: none; margin-bottom: 20px" href="@Url.Action("DownloadFile", "Home", new { fileName = "../wwwroot/Images/Team-5_Help_Document -Staff.docx" })">Need help?</a>
+	}
+</div>
+
+@if (User.IsInRole("Admin") || User.IsInRole("Supervisor") || User.IsInRole("Staff"))
+{
+	<section class="grid-container">
+		<a href="/Members" class="link">
+			<img src="~/Images/people-group.png" alt="Link Image">
+			
+			@if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+			{
+				<h2>Maintain Accounts</h2>
+				<p>You can go to the member page to edit team members personal information and their profile picture</p>
+			}
+			@if (User.IsInRole("Staff"))
+			{
+				<h2>PAC Members</h2>
+				<p>You can go to the member page to view the information of your colleagues in your committee</p>
+			}
+		</a>
+		<a href="/Meetings" class="link">
+			<img src="~/Images/meeting.png" alt="Link Image">
+			<h2>Meetings</h2>
+			@if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+			{
+				<p>You can go to the meeting page to add more attendants and edit the meeting information and documents</p>
+			}
+			@if (User.IsInRole("Staff"))
+			{
+				<p>You can go to the meeting page to view attendants and download the meeting documents</p>
+			}
+		</a>
+		@if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+		{
+			<a href="/PACs" class="link">
+				<img src="~/Images/school-cap.png" alt="Link Image">
+				<h2>PACs</h2>
+				@if (User.IsInRole("Admin"))
+				{
+					<p>You can add or delete PACs or assign them to an existing committee</p>
+				}
+				@if (User.IsInRole("Supervisor"))
+				{
+					<p>You can add more PACs and assign them to an existing committee</p>
+				}
+			</a>
+		}
+		@if (User.IsInRole("Admin"))
+		{
+			<a href="/Polls" class="link">
+				<img src="~/Images/polls.png" alt="Link Image">
+				<h2>Poll Manager</h2>
+				@if (User.IsInRole("Admin"))
+				{
+					<p>You can manage or view polls</p>
+				}
+			</a>
+		}
+		@if (User.IsInRole("Staff") || User.IsInRole("Supervisor"))
+		{
+			<a href="/PollVoting" class="link">
+				<img src="~/Images/polls-bar.png" alt="Link Image">
+				<h2>Poll Voting</h2>
+				@if (User.IsInRole("Staff") || User.IsInRole("Supervisor"))
+				{
+					<p>You can vote on polls</p>
+				}
+			</a>
+		}
+	</section>
+}
+
+<script>
+	//Register the service worker.
+	//Note is is still not "installable" without the manifest
+	if (navigator.serviceWorker.controller) {
+		console.log('Active service worker found, no need to register');
+	} else {
+		navigator.serviceWorker.register('sw.js', {
+			scope: './'
+		}).then(function (reg) {
+			console.log('Service worker has been registered for scope:' + reg.scope);
+		});
+	}
+</script>

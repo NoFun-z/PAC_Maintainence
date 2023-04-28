@@ -1,0 +1,69 @@
+﻿@model List<NiagaraCollegeProject.Models.Member>
+
+<h2>Archived Accounts</h2>
+
+@if (Model.Count == 0)
+{
+    <p>No archived accounts found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    FullName
+                </th>
+                <th>
+                    Committee
+                </th>
+                <th>
+                    PAC
+                </th>
+                <th>
+                    JoinedDate
+                </th>
+                <th>
+                    LastUpdate
+                </th>
+                <th>
+                    RenewalDue
+                </th>
+                
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FullName)<br />
+                        Email: @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AcademicDivision.DivisionName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PAC.PACName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SignUpDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReNewDate_)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RenewalDueBy)
+                    </td>
+                   
+                    <td>
+                        @Html.ActionLink("Restore", "Restore", new { id = item.ID }) |
+                        <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

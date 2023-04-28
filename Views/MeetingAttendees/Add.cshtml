@@ -1,0 +1,42 @@
+﻿@model NiagaraCollegeProject.Models.MeetingAttendees
+
+@{
+    ViewData["Title"] = "Add Attendee";
+}
+
+<h4>Add Attendee for Meeting: @ViewData["MeetingTopicName"]</h4>
+<hr />
+<form asp-action="Add">
+    <input type="hidden" name="MeetingID" value="@Model.MeetingID" />
+    <input type="hidden" name="MeetingTopicName" value="@ViewData["MeetingTopicName"]" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <select hidden asp-for="MeetingID" class="form-control" asp-items="ViewBag.MeetingID">@ViewData["MeetingTopicName"]</select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Member</label>
+                <select asp-for="MemberID" id="MemberID"class="form-control" asp-items="ViewBag.MemberID"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary Save_btns" />
+                <a href='@ViewData["returnURL"]' class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+
+            </div>
+        </div>
+    </div>
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        <script src="~/js/multiselect.js"></script>
+    }
+            <link rel="stylesheet" href="~/css/SearchableDDL.css" />
+            <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+            <script type="text/jscript">
+                $(function () {
+                    $("#MemberID").select2();
+                });
+            </script>
+}

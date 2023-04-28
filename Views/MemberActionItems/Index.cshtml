@@ -1,0 +1,286 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.MemberActionItems>
+
+@{
+    NiagaraCollegeProject.Models.Member member = (NiagaraCollegeProject.Models.Member)ViewBag.Member;
+}
+
+<style>
+    label{
+        margin-top: 10px;
+    }
+</style>
+
+<h1>Profile Details for @member.FullName</h1>
+<br />
+<div>
+       @{
+            if(member.MemberPhoto?.Content != null)
+            {
+                @:<div>
+                    string imageBase64 = Convert.ToBase64String(member.MemberPhoto.Content);
+                    string imageSrc = string.Format("data:" + member.MemberPhoto.MimeType + ";base64, {0}", imageBase64);
+                    <img src="@imageSrc" wilabelh="350" height="200" alt="The profile picture of @member.FullName" title="The profile picture of @member.FullName" class="img-fluid rounded"/>
+                @:</div><hr />
+            }
+        }
+
+        <dl class="row">
+            <div class="col-md-4">
+                    <h4>Member Information</h4>
+
+                    <label class="col-sm-10">
+                        <strong>@Html.DisplayNameFor(model => member.Salutation):</strong> @Html.DisplayFor(model => member.Salutation.SalutationTitle)
+                    </label>        
+                    <label class="col-sm-10">
+                        <strong>@Html.DisplayNameFor(model => member.FullName):</strong> @Html.DisplayFor(model => member.FullName)
+                    </label>
+                    <label class="col-sm-10">
+                        <strong>@Html.DisplayNameFor(model => member.PhoneNumber):</strong> @Html.DisplayFor(model => member.PersonalPhoneFormatted)            
+                    </label>
+                    <label class="col-sm-10">
+                        <strong>@Html.DisplayNameFor(model => member.Email):</strong> @Html.DisplayFor(model => member.Email)
+                    </label> 
+                                        <label class="col-sm-10">
+                        <strong>@Html.DisplayNameFor(model => member.MemberRole):</strong> @Html.DisplayFor(model => member.MemberRole)
+                    </label> 
+                    @if (!User.IsInRole("Staff")){
+                        <label class="col-sm-10">
+                            <strong>Full Address:</strong> @Html.DisplayFor(model => member.MemberFormattedAddress)
+                        </label>      
+                          <label class="col-sm-10">
+                            <strong>Member Since:</strong> @Html.DisplayFor(model => member.SignUpDate)
+                        </label>
+                           <label class="col-sm-10">
+                            <strong>Last Updated:</strong> @Html.DisplayFor(model => member.ReNewDate_)
+                        </label>               
+                        <label class="col-sm-10">
+                            <strong>@Html.DisplayNameFor(model => member.RenewalDueBy):</strong> @Html.DisplayFor(model => member.RenewalDueBy)
+                        </label>
+                    }
+                  
+            @if (!User.IsInRole("Staff"))
+            {
+                <div class="form-group">
+                    <label><strong>Supporting Documents:</strong></label>
+                    <div class="ml-sm-10">
+                        @{
+                            int fileCount = member.MemberDocuments.Count;
+                            if (fileCount > 0)
+                            {
+                                var firstFile = member.MemberDocuments.FirstOrDefault(); ;
+                                if (fileCount > 1)
+                                {
+                                    <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(member.ID)" aria-expanded="false" aria-controls="collapseDocs@(member.ID)">
+                                        <span class="badge badge-info">@fileCount</span> Current Documents...
+                                    </a>
+                                    <div class="collapse" id="collapseDocs@(member.ID)">
+                                        @{
+                                            foreach (var d in member.MemberDocuments)
+                                            {
+                                                <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                            }
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            }    
+        </div>
+            <div class="col-md-4">
+                  <h4>Education Information</h4>
+                     <label class="col-sm-10">
+                        <strong>School Name:</strong> @Html.DisplayFor(model => member.AcademicDivision.DivisionName)
+                    </label>
+                   
+                    <label class="col-sm-10">
+                        <strong>@Html.DisplayNameFor(model => member.PAC):</strong> @Html.DisplayFor(model => member.PAC.PACName)
+                    </label>
+                    @if (!User.IsInRole("Staff"))
+                    {
+                        <label class="col-sm-10">
+                            <strong>@Html.DisplayNameFor(model => member.EducationSummary)</strong>
+                        </label>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => member.EducationSummary)
+                        </dd>
+                    }
+                    <label class="col-sm-10">
+                        <strong>@Html.DisplayNameFor(model => member.NCGraduate):</strong> @Html.DisplayFor(model => member.NCGraduate)
+                    </label>
+            </div>            
+            <div class="col-md-4">
+                    <h4>Employment Information</h4>
+                    <label class="col-sm-10">
+                        <strong>@Html.DisplayNameFor(model => member.CompanyName):</strong> @Html.DisplayFor(model => member.CompanyName)
+                    </label>
+                    @if (!User.IsInRole("Staff"))
+                    {
+                        <label class="col-sm-10">
+                            <strong>Address:</strong> @Html.DisplayFor(model => member.CompanyFormattedAddress)
+                        </label>
+
+                        <label class="col-sm-10">
+                            <strong>Phone Number:</strong> @Html.DisplayFor(model => member.WorkPhoneFormatted)
+                        </label>
+
+                        <label class="col-sm-10">
+                            <strong>Email:</strong> @Html.DisplayFor(model => member.CompanyEmail)
+                        </label>
+
+                        <label class="col-sm-10">
+                            <strong>@Html.DisplayNameFor(model => member.PreferredContact):</strong> @Html.DisplayFor(model => member.PreferredContact)
+                        </label>
+
+                        <label class="col-sm-10">
+                            <strong>@Html.DisplayNameFor(model => member.CompanyPositionTitle):</strong> @Html.DisplayNameFor(model => member.CompanyPositionTitle)
+                        </label>
+
+                        <label class="col-sm-10">
+                            <strong>@Html.DisplayNameFor(model => member.OccupationalSummary):</strong>
+                        </label>    
+                        <label class="col-sm-10">
+                            @Html.DisplayFor(model => member.OccupationalSummary)
+                        </label>
+                    }
+        </div>   
+        </dl>
+    </div>
+
+<h2>Assigned Action Items</h2>
+<form asp-action="Index" method="get">
+    <br/>
+    <div class="container-fluid d-block d-lg-none">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                //Make a card for each one
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.ActionItem.AgendaName)</strong></h5>
+                    <div class="card-body">
+                        <figure class="row">
+                            <figcaption class="col">
+                                <p class="card-text">
+                                    @*Card Text goes Here*@
+                                <p class="card-text">
+                                        @*Card Text goes Here*@
+                                    <dl class="row lh-1">
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.ActionItem.Meeting)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.ActionItem.Meeting.MeetingTopicName)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.ActionItem.Completed)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.ActionItem.Completed)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.ActionItem.TaskDueDate)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.ActionItem.TaskDueDate)
+                                        </dd>
+                                    </dl>
+                                </p>
+                                </p>
+                            </figcaption>
+                        </figure>
+                        <div class="card-footer">
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                            {
+                                <a asp-action="Edit" class="Acc_Edit" asp-route-id="@item.ID"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                                <a asp-action="Details" class="Acc_Details" asp-route-id="@item.ID"><i class="fa-solid fa-circle-info" style="color: #ffffff;"></i></a> 
+                            }
+
+                            
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Delete" class="btn-delete" asp-route-id="@item.ID">Delete</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="d-none d-lg-block">
+        <table class="table">
+            <thead>
+                <colgroup>
+                    <col span="1" />
+                    <col span="1" />
+                    <col span="1" />
+                    <col span="1" />
+                    <col span="1" />
+                </colgroup>
+                <tr>
+                    @{
+                        int totalTasks = 0;
+                        var UrlID = 0;
+                    }
+                    <th>
+                        ACTION NAME
+                    </th>
+                    <th>
+                        MEETING
+                    </th>
+                    <th>
+                        COMPLETED
+                    </th>
+                    <th>
+                        DUE DATE
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    totalTasks += 1;
+                    UrlID = item.ActionItem.MeetingID.GetValueOrDefault();
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ActionItem.AgendaName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ActionItem.Meeting.MeetingTopicName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ActionItem.Completed)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ActionItem.TaskDueDate)
+                        </td>
+                        <td>
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                            {
+                                <a asp-controller="ActionItems" asp-action="Edit" class="Acc_Edit" asp-route-id="@item.ID"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                            }
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td align="right">
+                        Total Assigned Items:
+                    </td>
+                    <td><strong>@totalTasks</strong></td>
+                    <td>
+                    </td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        <a href='/MeetingAttendees?MeetingID=@UrlID' class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+    <partial name="_PagingNavBar" />
+</form>

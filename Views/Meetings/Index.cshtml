@@ -1,0 +1,359 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.Meeting>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $("#success-message").fadeOut("slow");
+        }, 3500); //Change the duration (in milliseconds) to whatever you prefer
+
+        setTimeout(function () {
+            $("#NotificationsMM").fadeOut("slow");
+        }, 4500); //Change the duration (in milliseconds) to whatever you prefer
+    });
+</script>
+
+<script type="text/jscript">
+    $(document).ready(function () {
+
+        if ($("#divisionfilter").val() === "") {
+            $.getJSON('/Members/GetPacList2/', function (data) {
+                var items = "<option value=''>" + "All Pacs" + "</option>"; // corrected line
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#pacfilter').html(items);
+            });
+        }
+        else {
+            $.getJSON('/Members/GetPacList/' + $('#divisionfilter').val(), function (data) {
+                var items = "<option value=''>" + "All Pacs" + "</option>";
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#pacfilter').html(items);
+            });
+        }
+
+        $("#divisionfilter").on("change", function () {
+            // check if the selected value is the first option
+            if ($(this).val() === "") {
+                $.getJSON('/Members/GetPacList2/', function (data) {
+                    var items = "<option value=''>" + "All Pacs" + "</option>"; // corrected line
+                    $.each(data, function (i, PAC) {
+                        items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                    });
+                    $('#pacfilter').html(items);
+                });
+            }
+            else {
+                $.getJSON('/Members/GetPacList/' + $('#divisionfilter').val(), function (data) {
+                    var items = "<option value=''>" + "All Pacs" + "</option>";
+                    $.each(data, function (i, PAC) {
+                        items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                    });
+                    $('#pacfilter').html(items);
+                });
+            }
+        });
+    });
+</script>
+<h1>MEETINGS</h1>
+<br />
+@if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+{
+    <p>
+        <a asp-action="Create" class="btn_Create" data-toggle="tooltip" title="Create a new Meeting">CREATE NEW MEETING</a>
+    </p>
+}
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <div class="form-horizontal">
+        <button font-weight: bolder;" class="btn @(ViewData["Filtering"]) btn_Filter" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter" data-toggle="tooltip" title="Filter or Search Meetings">
+            Filter/Search
+        </button>
+        <div class="collapse" id="collapseFilter">
+            <div class="card card-body bg-light">
+                <div class="row">
+                    <div class="d-block d-lg-none">
+                        <div class="form-group">
+                            <label class="control-label">Sort By:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" class="" value="desc"
+                                        @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+                                               name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+                                    </div>
+                                </div>
+                                <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="control-label">Start Date:</label>
+                        <input type="date" name="StartDate" class="form-control"
+                               value="@((string) TempData["StartDate"])" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="control-label">End Date:</label>
+                        <input type="date" name="EndDate" class="form-control"
+                               value="@((string) TempData["EndDate"])" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by School:</label>
+                        @Html.DropDownList("AcademicDivisionID", null, "All Schools", htmlAttributes: new {@id = "divisionfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by PAC:</label>
+                        @Html.DropDownList("PACID", null, "All Pacs", htmlAttributes: new {@id = "pacfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4 align-self-end">
+                        <input type="submit" name="submitButton" value="Apply" class="btn btn-outline-primary" />
+                        <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div id="NotificationsMM">
+        <div class="text-danger">@TempData["message"]</div>
+        <div class="text-success">@TempData["notificationSent"]</div>
+    </div>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="success-message" class="alert alert-success">
+            <strong>SUCCESS!</strong> @TempData["SuccessMessage"]
+        </div>
+    }
+    <div class="container-fluid d-block d-lg-none">
+        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+        {
+            <button type="button" class="Acc_Arc" style="font-weight: bolder; padding: 5px 8px; margin-bottom: 5px" onclick="location.href='@Url.Action("Index", "ArchivedMeetings")'">
+                ARCHIVED MEETINGS
+            </button>
+        }
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                //Make a card for each one
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.MeetingTopicName)</strong></h5>
+                    <div class="card-body">
+                        <figure class="row">
+                            <figcaption class="col">
+                                <p class="card-text">
+                                    @*Card Text goes Here*@
+                                <p class="card-text">
+                                        @*Card Text goes Here*@
+                                    <dl class="row lh-1">
+                                        <dt class="col-3 text-truncate">
+                                            Start
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.MeetingStartTimeDate)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                            PAC
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.PAC.PACName)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                            Documents
+                                        </dt>
+                                        <dd class="col-9">
+                                                @{
+                                                    int fileCount = item.MeetingDocuments.Count;
+                                                    if (fileCount > 0)
+                                                    {
+                                                        var firstFile = item.MeetingDocuments.FirstOrDefault(); ;
+                                                        if (fileCount > 1)
+                                                        {
+                                                        <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(item.ID)" aria-expanded="false" aria-controls="collapseDocs@(item.ID)">
+                                                            <span>@fileCount</span> Documents...
+                                                        </a>
+                                                        <div class="collapse" id="collapseDocs@(item.ID)">
+                                                                @{
+                                                                    foreach (var d in item.MeetingDocuments)
+                                                                    {
+                                                                    <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                                                    }
+                                                                }
+                                                        </div>
+                                                        }
+                                                        else
+                                                        {
+                                                        <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                                                        }
+                                                    }
+                                                }
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                            Attendees
+                                        </dt>
+                                        <dd class="col-9">
+                                                @{
+                                                    int attendeeCount = item.Attendees.Count;
+                                                    if (attendeeCount > 0)
+                                                    {
+                                                        string firstAttendee = item.Attendees.FirstOrDefault().Member.FullName;
+                                                        if (attendeeCount > 1)
+                                                        {
+                                                            string attendeeList = "";
+                                                            var c = item.Attendees.ToList();
+                                                            for (int i = 1; i < attendeeCount; i++)
+                                                            {
+                                                                attendeeList += c[i].Member.FullName + " <br />";
+                                                            }
+                                                        <a class="" role="button" data-bs-toggle="collapse" href="#collapseHistory@(item.ID)"
+                                                           aria-expanded="false" aria-controls="collapseHistory@(item.ID)">
+                                                                @firstAttendee <span class="badge bg-info">@attendeeCount</span>
+                                                        </a>
+                                                        <div class="collapse" id="collapseHistory@(item.ID)">
+                                                                @Html.Raw(attendeeList)
+                                                        </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            @firstAttendee
+                                                        }
+                                                    }
+                                                }
+                                        </dd>
+                                    </dl>
+                                </p>
+                                </p>
+                            </figcaption>
+                        </figure>
+                        <div class="card-footer">
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                            {
+                                <a asp-action="Edit" class="Acc_Edit" asp-route-id="@item.ID" data-toggle="tooltip" title="Edit a Meeting"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                            }
+
+                            <a asp-action="Index" asp-controller="MeetingAttendees" class="Acc_Details" asp-route-MeetingID="@item.ID" data-toggle="tooltip" title="View Meeting Details"><i class="fa-solid fa-circle-info" style="color: #ffffff;"></i></a>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                            {
+                                <a class="Acc_Arc" data-toggle="tooltip" title="Archive the meeting" asp-action="Archive" asp-controller="Meetings" asp-route-id="@item.ID"><i class="fa-solid fa-box-archive" style="color: #ffffff;"></i></a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="d-none d-lg-block">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="MEETING DATE/START TIME ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="PAC ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" disabled value="MEETING MINUTES" class="btn" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="ATTENDEES ↕" class="btn" />
+                    </th>
+                    <th>
+                        <button type="button" class="Acc_Arc" style="font-weight: bolder; padding: 5px 8px; margin-bottom: 5px" onclick="location.href='@Url.Action("Index", "ArchivedMeetings")'">
+                            ARCHIVED MEETINGS
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MeetingStartTimeDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PAC.PACName)
+                        </td>
+                        <td>
+                            @{
+                                int fileCount = item.MeetingDocuments.Count;
+                                if (fileCount > 0)
+                                {
+                                    var firstFile = item.MeetingDocuments.FirstOrDefault(); ;
+                                    if (fileCount > 1)
+                                    {
+                                        <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(item.ID)" aria-expanded="false" aria-controls="collapseDocs@(item.ID)">
+                                            <span class="badge badge-info">@fileCount</span> Documents...
+                                        </a>
+                                        <div class="collapse" id="collapseDocs@(item.ID)">
+                                            @{
+                                                foreach (var d in item.MeetingDocuments)
+                                                {
+                                                    <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                                    }
+                                }
+                            }
+                        </td>
+                        <td>
+
+                            @{
+                                int attendeeCount = item.Attendees.Count;
+                                if (attendeeCount > 0)
+                                {
+                                    string firstAttendee = item.Attendees.FirstOrDefault().Member.FullName;
+                                    if (attendeeCount > 1)
+                                    {
+                                        string attendeeList = "";
+                                        var c = item.Attendees.ToList();
+                                        for (int i = 1; i < attendeeCount; i++)
+                                        {
+                                            attendeeList += c[i].Member.FullName + " <br />";
+                                        }
+                                        <a class="" role="button" data-bs-toggle="collapse" href="#collapseHistory@(item.ID)"
+                                           aria-expanded="false" aria-controls="collapseHistory@(item.ID)">
+                                            @firstAttendee <span class="badge bg-info">@attendeeCount</span>
+                                        </a>
+                                        <div class="collapse" id="collapseHistory@(item.ID)">
+                                            @Html.Raw(attendeeList)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @firstAttendee
+                                    }
+                                }
+                            }
+                        </td>
+                        <td>
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                            {
+                                <a asp-action="Edit" class="Acc_Edit" asp-route-id="@item.ID" data-toggle="tooltip" title="Edit a Meeting"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                            }
+
+                            <a asp-action="Index" asp-controller="MeetingAttendees" class="Acc_Details" asp-route-MeetingID="@item.ID" data-toggle="tooltip" title="View Meeting Details"><i class="fa-solid fa-circle-info" style="color: #ffffff;"></i></a>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                            {
+                                <a class="Acc_Arc" data-toggle="tooltip" title="Archive the meeting" asp-action="Archive" asp-controller="Meetings" asp-route-id="@item.ID"><i class="fa-solid fa-box-archive" style="color: #ffffff;"></i></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_PagingNavBar" />
+</form>

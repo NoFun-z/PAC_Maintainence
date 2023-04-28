@@ -1,0 +1,416 @@
+﻿@model NiagaraCollegeProject.ViewModels.MemberVM
+
+@{
+    NiagaraCollegeProject.Models.Member mem = ViewBag.Mem;
+}
+
+<h1>Renew Account status for @User.Identity.Name</h1>
+<div class="text-danger">@TempData["message"]</div>
+<hr />
+        <span class="colorred">*Fields marked with a red asterisk are required.</span>
+
+<style>
+input:invalid {
+    border: 2px dashed red;
+}
+
+input:valid {
+    border: 2px solid green;
+}
+
+</style>
+
+@if (mem.RenewalDueBy.AddMonths(-6) <= DateTime.Now && mem.NotRenewing == false)
+{
+    <form asp-action="Renew" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="ID" />
+        <div class="row">
+
+            <div class="form-group col-md-4">
+
+                <h4>Personal Information</h4>
+                <div class="form-group">
+                    <label asp-for="Salutation" class="control-label"></label><span class="colorred">*</span>
+                    <select asp-for="SalutationID" required class="form-control" asp-items="ViewBag.SalutationID"></select>
+                    <span asp-validation-for="SalutationID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FirstName" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Davion", @required = "true"}})
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Hopkins", @required = "true"}})
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="StreetAddress" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.StreetAddress, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 15 YorkDale avenue", @required = "true"}})
+                    <span asp-validation-for="StreetAddress" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="City" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.City, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Windsor", @required = "true"}})
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Province" class="control-label"></label><span class="colorred">*</span>
+                    <select asp-for="Province" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Provinces>()"></select>
+                    <span asp-validation-for="Province" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PostalCode" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.PostalCode, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: G2AG19", @required = "true"}})
+                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PhoneNumber" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 2899451347", @required = "true"}})
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: JohnWick@outlook.com", @required = "true", @type = "email"}})
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <h4>Employment Information</h4>
+                <div class="form-group">
+                    <label asp-for="CompanyPositionTitle" class="control-label">Position Title</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyPositionTitle, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Receiptionist", @required = "true"}})
+                    <span asp-validation-for="CompanyPositionTitle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyName" class="control-label">Company Name</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Google", @required = "true"}})
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyStreetAddress" class="control-label">Street Address</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyStreetAddress, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 15 YorkDale avenue", @required = "true"}})
+                    <span asp-validation-for="CompanyStreetAddress" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyCity" class="control-label">City</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyCity, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Windsor", @required = "true"}})
+                    <span asp-validation-for="CompanyCity" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyProvince" class="control-label">Province</label><span class="colorred">*</span>
+                    <select asp-for="CompanyProvince" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Provinces>()"></select>
+                    <span asp-validation-for="CompanyProvince" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyPostalCode" class="control-label">Postal Code</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyPostalCode, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: G2AG19", @required = "true"}})
+                    <span asp-validation-for="CompanyPostalCode" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyPhoneNumber" class="control-label">Phone Number</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyPhoneNumber, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 2899451347", @required = "true"}})
+                    <span asp-validation-for="CompanyPhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyEmail" class="control-label">Email</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyEmail, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: google@google.com", @required = "true", @type = "email"}})
+                    <span asp-validation-for="CompanyEmail" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PreferredContact" class="control-label">Preferred Email Contact</label><span class="colorred">*</span>
+                    <select asp-for="PreferredContact" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Contact>()"></select>
+                    <span asp-validation-for="PreferredContact" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <h4>Education Information</h4>
+                <div class="form-group">
+                    <label asp-for="EducationSummary" class="control-label"></label>
+                    @Html.EditorFor(model => model.EducationSummary, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Sophomore at Brock University"}})
+                    <span asp-validation-for="EducationSummary" class="text-danger"></span>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="NCGraduate" /> @Html.DisplayNameFor(model => model.NCGraduate)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label asp-for="OccupationalSummary" class="control-label"></label>
+                    @Html.EditorFor(model => model.OccupationalSummary, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Networking technician at ABC company from.. to.."}})
+                    <span asp-validation-for="OccupationalSummary" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary Save_btns"><i class="fa-solid fa-check"></i></button>
+            <a asp-action="NotRenew" asp-route-id="@Model.ID" class="Back_btns" style="margin-right: 0px">Dont Renew</a>
+            <a asp-action="Details" class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+        </div>
+    </form>
+}
+else if (mem.NotRenewing == true)
+{
+    <form asp-action="Renew" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="ID" />
+        <div class="row">
+
+            <div class="form-group col-md-4">
+
+                <h4>Personal Information</h4>
+                <div class="form-group">
+                    <label asp-for="Salutation" class="control-label"></label><span class="colorred">*</span>
+                    <select disabled asp-for="SalutationID" required class="form-control" asp-items="ViewBag.SalutationID"></select>
+                    <span asp-validation-for="SalutationID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FirstName" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Davion", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Hopkins", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="StreetAddress" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.StreetAddress, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 15 YorkDale avenue", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="StreetAddress" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="City" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.City, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Windsor", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Province" class="control-label"></label><span class="colorred">*</span>
+                    <select disabled asp-for="Province" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Provinces>()"></select>
+                    <span asp-validation-for="Province" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PostalCode" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.PostalCode, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: G2AG19", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PhoneNumber" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 2899451347", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: JohnWick@outlook.com", @required = "true", @type = "email", @readonly = "readonly"}})
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <h4>Employment Information</h4>
+                <div class="form-group">
+                    <label asp-for="CompanyPositionTitle" class="control-label">Position Title</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyPositionTitle, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Receiptionist", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyPositionTitle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyName" class="control-label">Company Name</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Google", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyStreetAddress" class="control-label">Street Address</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyStreetAddress, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 15 YorkDale avenue", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyStreetAddress" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyCity" class="control-label">City</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyCity, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Windsor", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyCity" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyProvince" class="control-label">Province</label><span class="colorred">*</span>
+                    <select disabled asp-for="CompanyProvince" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Provinces>()"></select>
+                    <span asp-validation-for="CompanyProvince" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyPostalCode" class="control-label">Postal Code</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyPostalCode, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: G2AG19", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyPostalCode" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyPhoneNumber" class="control-label">Phone Number</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyPhoneNumber, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 2899451347", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyPhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyEmail" class="control-label">Email</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyEmail, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: google@google.com", @required = "true", @type = "email", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyEmail" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PreferredContact" class="control-label">Preferred Email Contact</label><span class="colorred">*</span>
+                    <select disabled asp-for="PreferredContact" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Contact>()"></select>
+                    <span asp-validation-for="PreferredContact" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <h4>Education Information</h4>
+                <div class="form-group">
+                    <label asp-for="EducationSummary" class="control-label"></label>
+                    @Html.EditorFor(model => model.EducationSummary, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Sophomore at Brock University", @readonly = "readonly"}})
+                    <span asp-validation-for="EducationSummary" class="text-danger"></span>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input disabled class="form-check-input" asp-for="NCGraduate" /> @Html.DisplayNameFor(model => model.NCGraduate)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label asp-for="OccupationalSummary" class="control-label"></label>
+                    @Html.EditorFor(model => model.OccupationalSummary, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Networking technician at ABC company from.. to..", @readonly = "readonly"}})
+                    <span asp-validation-for="OccupationalSummary" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <a asp-action="Details" class="Back_btns" style="margin-left: 0px"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+            <span style="color: red; font-weight: bold;">You choosen not to renew, to change this, please email your PAC leader orsupervisor to restore your account status.</span>
+        </div>
+    </form>
+}
+else if (mem.RenewalDueBy.AddMonths(-6) > DateTime.Now)
+{
+    <form asp-action="Renew" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="ID" />
+        <div class="row">
+
+            <div class="form-group col-md-4">
+
+                <h4>Personal Information</h4>
+                <div class="form-group">
+                    <label asp-for="Salutation" class="control-label"></label><span class="colorred">*</span>
+                    <select disabled asp-for="SalutationID" required class="form-control" asp-items="ViewBag.SalutationID"></select>
+                    <span asp-validation-for="SalutationID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FirstName" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Davion", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Hopkins", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="StreetAddress" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.StreetAddress, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 15 YorkDale avenue", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="StreetAddress" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="City" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.City, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Windsor", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Province" class="control-label"></label><span class="colorred">*</span>
+                    <select disabled asp-for="Province" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Provinces>()"></select>
+                    <span asp-validation-for="Province" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PostalCode" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.PostalCode, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: G2AG19", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PhoneNumber" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 2899451347", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: JohnWick@outlook.com", @required = "true", @type = "email", @readonly = "readonly"}})
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <h4>Employment Information</h4>
+                <div class="form-group">
+                    <label asp-for="CompanyPositionTitle" class="control-label">Position Title</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyPositionTitle, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Receiptionist", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyPositionTitle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyName" class="control-label">Company Name</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Google", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyStreetAddress" class="control-label">Street Address</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyStreetAddress, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 15 YorkDale avenue", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyStreetAddress" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyCity" class="control-label">City</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyCity, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Windsor", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyCity" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyProvince" class="control-label">Province</label><span class="colorred">*</span>
+                    <select disabled asp-for="CompanyProvince" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Provinces>()"></select>
+                    <span asp-validation-for="CompanyProvince" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyPostalCode" class="control-label">Postal Code</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyPostalCode, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: G2AG19", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyPostalCode" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyPhoneNumber" class="control-label">Phone Number</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyPhoneNumber, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 2899451347", @required = "true", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyPhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyEmail" class="control-label">Email</label><span class="colorred">*</span>
+                    @Html.EditorFor(model => model.CompanyEmail, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: google@google.com", @required = "true", @type = "email", @readonly = "readonly"}})
+                    <span asp-validation-for="CompanyEmail" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PreferredContact" class="control-label">Preferred Email Contact</label><span class="colorred">*</span>
+                    <select disabled asp-for="PreferredContact" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Contact>()"></select>
+                    <span asp-validation-for="PreferredContact" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <h4>Education Information</h4>
+                <div class="form-group">
+                    <label asp-for="EducationSummary" class="control-label"></label>
+                    @Html.EditorFor(model => model.EducationSummary, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Sophomore at Brock University", @readonly = "readonly"}})
+                    <span asp-validation-for="EducationSummary" class="text-danger"></span>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input disabled class="form-check-input" asp-for="NCGraduate" /> @Html.DisplayNameFor(model => model.NCGraduate)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label asp-for="OccupationalSummary" class="control-label"></label>
+                    @Html.EditorFor(model => model.OccupationalSummary, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Networking technician at ABC company from.. to..", @readonly = "readonly"}})
+                    <span asp-validation-for="OccupationalSummary" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <a asp-action="Details" class="Back_btns" style="margin-left: 0px"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+            <span style="color: red; font-weight: bold;">Action can only performed 6 months prior to the due date</span>           
+        </div>
+    </form>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

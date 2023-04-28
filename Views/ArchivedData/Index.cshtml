@@ -1,0 +1,180 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.Member>
+
+@*Populate Pac ddl with related division fk*@
+<script type="text/jscript">
+    $(document).ready(function () {
+        $("#divisionfilter").on("change", function () {
+            // check if the selected value is the first option
+            if ($(this).val() === "") {
+                $.getJSON('/Members/GetPacList2/', function (data) {
+                    var items = "<option value=''>" + "All Schools" + "</option>"; // corrected line
+                    $.each(data, function (i, PAC) {
+                        items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                    });
+                    $('#pacfilter').html(items);
+                });
+            }
+            else {
+                $.getJSON('/Members/GetPacList/' + $('#divisionfilter').val(), function (data) {
+                    var items = '';
+                    $.each(data, function (i, PAC) {
+                        items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                    });
+                    $('#pacfilter').html(items);
+                });
+            }
+        });
+    });
+</script>
+
+<h1>Archived Account(s)</h1>
+<br />
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <div class="form-horizontal">
+        <button font-weight: bolder;" class="btn @(ViewData["Filtering"]) btn_Filter" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+            Filter/Search
+        </button>
+        <div class="collapse" id="collapseFilter">
+            <div class="card card-body bg-light">
+                <div class="row">
+                    <div class="d-block d-lg-none">
+                        <div class="form-group">
+                            <label class="control-label">Sort By:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" class="" value="desc"
+                                               @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+                                               name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+                                    </div>
+                                </div>
+                                <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Search Member Name:</label>
+                        @Html.TextBox("SearchString", null, new { @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by School:</label>
+                        @Html.DropDownList("AcademicDivisionID", null, "All Schools", htmlAttributes: new {@id = "divisionfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by PAC:</label>
+                        @Html.DropDownList("PACID", null, "All Pacs", htmlAttributes: new {@id = "pacfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4 align-self-end">
+                        <input type="submit" name="submitButton" value="Apply" class="btn btn-outline-primary" />
+                        <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="container-fluid d-block d-md-none">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.FullName)</strong></h5>
+                    <div class="card-body">
+                        <figure class="row">
+                            <figcaption class="col">
+                                <p class="card-text">
+                                    @*Card Text goes Here*@
+                                <p class="card-text">
+                                        @*Card Text goes Here*@
+                                    <dl class="row lh-1">
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.PersonalPhoneFormatted)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.PersonalPhoneFormatted)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Email)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Email)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.PAC)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.PAC.PACName)
+                                        </dd>
+                                    </dl>
+
+                            </figcaption>
+                        </figure>
+                        <div class="card-footer">
+                            <td>
+                                @Html.ActionLink("Restore", "Restore", new { id = item.ID }, new { @class="btn-restore" })
+                                <a asp-action="Delete" class="btn-delete" asp-route-id="@item.ID">Delete</a>
+                            </td>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+    <div class="container-fluid d-none d-md-block">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bolder; margin-bottom: 0; padding-bottom: 0;" value="FIRST NAME ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bolder; margin-bottom: 0; padding-bottom: 0;" value="LAST NAME ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" disabled value="PHONE" class="btn" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bolder; margin-bottom: 0; padding-bottom: 0;" value="EMAIL ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bolder; margin-bottom: 0; padding-bottom: 0;" value="PAC ↕" class="btn" />
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PersonalPhoneFormatted)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PAC.PACName)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Restore", "Restore", new { id = item.ID }, new { @class="btn-restore" })
+                            <a asp-action="Delete" class="btn-delete" asp-route-id="@item.ID">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_PagingNavBar" />
+</form>
+

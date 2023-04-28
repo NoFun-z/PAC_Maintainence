@@ -1,0 +1,162 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.Poll>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>POLLS</h1>
+
+<p>
+    <a class="btn_Create" asp-action="Create">ADD NEW POLL</a>
+</p>
+<form asp-action="Index" method="get">
+<input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+        <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+        <div class="form-horizontal">
+            <button font-weight: bolder;" class="btn @(ViewData["Filtering"]) btn_Filter" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+                Filter/Search
+        </button    >
+        <div     class="collapse" id="collapseFilter">
+                <div class="card card-body bg-light">
+                    <div class="row">
+                        <div class="d-block d-lg-none">
+                            <div class="form-group">
+                                <label class="control-label">Sort By:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <input type="checkbox" class="" value="desc"
+                                                   @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+                                                   name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+                                        </div>
+                                    </div>
+                                            <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+                                </div>
+                            </div>
+                        </div>
+
+                            <div class="form-group col-md-4">
+                            <label class="control-label">Search Poll Question:</label>
+                        @Html.TextBox("SearchString", null, new { @class = "form-control"})
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label class="control-label">Select by PAC:</label>
+                        @Html.DropDownList("PACID", null, "All Pacs", htmlAttributes: new {@id = "pacfilter", @class = "form-control"})
+                    </div>
+                        <div class="form-group col-md-4 align-self-end">
+                            <input type="submit" name="submitButton" value="Apply" class="btn btn-outline-primary" />
+                                    <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    @if (TempData["SuccessMessage"] != null)
+    {
+            <div id="success-message" class="alert alert-success" style="margin-left: 12px">
+                <strong>SUCCESS!</strong> @TempData["SuccessMessage"]
+            </div>
+    }
+    @if (TempData["FailureMessage"] != null)
+    {
+            <div id="failure-message" class="alert alert-danger" style="margin-left: 12px">
+                <strong>FAILURE!</strong> @TempData["FailureMessage"]
+            </div>
+    }
+    <div class="container-fluid d-block d-lg-none">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                    <div class="card mb-sm-3" style="min-width: 18rem;">
+                        <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.Question)</strong></h5>
+                        <div class="card-body">
+                            <figure class="row">
+                                <figcaption class="col">
+                                    <p class="card-text">
+                                    @*Card Text goes Here*@
+                                    <p class="card-text">
+                                        @*Card Text goes Here*@
+                                        <dl class="row lh-1">
+                                            <dt class="col-3 text-truncate">
+                                                Active Status
+                                            </dt>
+                                            <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.isActive)
+                                            </dd>
+                                            <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.ExpiryDate)
+                                            </dt>
+                                            <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.ExpiryDate)
+                                            </dd>
+                                            <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.PAC)
+                                            </dt>
+                                            <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.PAC.PACName)
+                                            </dd>
+                                        </dl>
+
+                                </figcaption>
+                            </figure>
+                            <div class="card-footer">
+                                <td>
+                                    <a class="Acc_Edit" data-toggle="tooltip" title="Poll Details" asp-action="Details" asp-route-id="@item.ID"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                                    <a asp-action="Delete" class="btn-delete" asp-route-id="@item.ID">DELETE</a>
+                             </td>
+                            </div>
+                        </div>
+                    </div>
+            }
+        </div>
+
+    </div>
+    <div class="d-none d-lg-block">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="QUESTION ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="ACTIVE STATUS ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="EXPIRY DATE ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="PAC ↕" class="btn" />
+                    </th>  
+                    <th>
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                      <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Question)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isActive)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.ExpiryDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PAC.PACName)
+            </td>
+            <td>
+                    <a class="Acc_Edit" data-toggle="tooltip" title="Poll Details" asp-action="Details" asp-route-id="@item.ID"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                    <a asp-action="Delete" class="btn-delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_PagingNavBar" />
+</form>

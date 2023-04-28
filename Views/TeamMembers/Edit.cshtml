@@ -1,0 +1,138 @@
+﻿@model NiagaraCollegeProject.ViewModels.MemberAdminVM
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+@*Populate Pac ddl with related division fk*@
+<script type="text/jscript">
+    $(function () {
+        $(document).ready(function () {
+            $.getJSON('/TeamMembers/GetPacList/' + $('#divisioncbo').val(), function (data) {
+                var items = '';
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#PACID').html(items);
+                $('#PACID').val('@Model.PACID');
+            });
+        });
+    });
+</script>
+
+<script type="text/jscript">
+    $(function ()
+    {
+        $('#divisioncbo').change(function ()
+        {        
+            $.getJSON('/TeamMembers/GetPacList/' + $('#divisioncbo').val(), function (data)
+            {
+                var items = '';
+                $.each(data, function (i, PAC)
+                {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#PACID').html(items);
+            });
+        });
+    });
+</script>
+<style>
+input:invalid {
+    border: 2px dashed red;
+}
+
+input:valid {
+    border: 2px solid green;
+}
+
+</style>
+<h4>Account Details for @Model.FullName (@Model.Email)</h4>
+<hr />
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+            <div class="col-md-4">
+            <input type="hidden" asp-for="ID" />
+
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Keanu"}})
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Reeves"}})
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AcademicDivisionID" class="control-label">School Of</label><span class="colorred">*</span>
+                <select asp-for="AcademicDivisionID" id="divisioncbo" class="form-control" asp-items="ViewBag.AcademicDivisionID"></select>
+                <span asp-validation-for="AcademicDivisionID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PACID" class="control-label">PAC</label><span class="colorred">*</span>
+                <select asp-for="PACID" id="PACID" class="form-control" asp-items="ViewBag.PACID"></select>
+                <span asp-validation-for="PACID" class="text-danger"></span>
+            </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label><span class="colorred">*</span><div class="hover-text">
+                    <i class="fa-solid fa-question fa-beat fa-2xs"></i>
+                    <span class="tooltip-text" id="top">Once you change a member login email they will be notified to reset there password.</span>
+                </div>
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new {@class = "form-control", @type = "email", @placeholder = " example: JohnWick@outlook.com"}})
+                    <span asp-validation-for="Email" class="text-danger"></span>                  
+                </div>
+                <div class="form-group">
+                    <label asp-for="MemberRole" class="control-label"></label><span class="colorred">*</span>
+                    <select asp-for="MemberRole" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.MemberPacRole>()"></select>
+                    <span asp-validation-for="MemberRole" class="text-danger"></span>
+                </div>              
+                <div class="form-group">
+                    <label asp-for="UserRoles" class="control-label"></label><div class="hover-text">
+                    <i class="fa-solid fa-question fa-beat fa-2xs"></i>
+                    <span class="tooltip-text" id="top">Each authorization role will give each user access to certian site features.</span>
+                    </div>
+                    @{
+                        string rolename = "Member";
+                    }
+                    <table style="margin:0px;">
+                        <tr>
+                            @{
+                                int cnt = 0;
+                                List<NiagaraCollegeProject.ViewModels.RoleVM> roles = ViewBag.Roles;
+                                foreach (var role in roles)
+                                {
+                                    if (cnt++ % 3 == 0)
+                                    {
+                                    @:</tr><tr>
+                                    }
+                                    @:<td>
+                                        <input type="checkbox"
+                                               name="selectedRoles"
+                                               value="@role.RoleName"
+                                               @(Html.Raw(role.Assigned ? "checked=\"checked\"" : "")) />
+                                               @if(role.RoleName == "Staff"){
+                                                   @rolename @:&nbsp;&nbsp;
+                                               }
+                                               else{
+                                                   @role.RoleName @:&nbsp;&nbsp;
+                                               }
+                                    @:</td>
+                                }
+                            @:</tr>
+                            }
+                    </table>
+                </div>
+            </div>
+        </div>
+            <div class="form-group">
+                  <button type="submit"class="btn btn-primary Save_btns"><i class="fa-solid fa-check"></i></button>
+                  <a asp-controller="Members" asp-action="Index" class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+            </div>
+        </form>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

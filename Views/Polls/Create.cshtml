@@ -1,0 +1,159 @@
+﻿@model NiagaraCollegeProject.Models.Poll
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+@{
+    ViewData["Title"] = "Create";
+}
+<script src="https://kit.fontawesome.com/1d19684a0b.js" crossorigin="anonymous"></script>
+
+<style>
+    .form-options{
+        display: initial;
+        width: 85%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: 0.25rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+</style>
+
+<h1>Create a New Poll</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+
+        @using (Html.BeginForm("Create", "Polls", FormMethod.Post, new { id = "myForm" }))
+        {
+            <div id="divError" class="alert alert-danger collapse">
+                <div id="divErrorText"></div>
+            </div>
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Question" required class="control-label"></label><span class="colorred">*</span>
+                <input asp-for="Question" id="question"class="form-control" />
+                <span asp-validation-for="Question" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input checked="checked" class="form-check-input" asp-for="isActive" /> Active Status
+                </label>
+                <div class="hover-text">
+                    <i class="fa-solid fa-question fa-beat fa-2xs"></i>
+                    <span class="tooltip-text" id="top">By default a Poll is set to active which means members can vote on the poll. Unchecking the active status will disable voting.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExpiryDate" required class="control-label"></label><span class="colorred">*</span>
+                <input asp-for="ExpiryDate" id="expiryDate" class="form-control" />
+                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PacID" required class="control-label"></label><span class="colorred">*</span>
+                <div class="hover-text">
+                    <i class="fa-solid fa-question fa-beat fa-2xs"></i>
+                    <span class="tooltip-text" id="top">All members within the selected PAC will be able to vote on this poll.</span>
+                </div>
+                <select asp-for="PacID" id="PACID" class="form-control" asp-items="ViewBag.PacID">
+                    <option selected="selected" value="">Please Select a PAC</option>
+                </select>
+                <span asp-validation-for="PacID" class="text-danger"></span>               
+            </div>
+            <label class="control-label" for="Options">Poll Options (2 min required)</label>
+
+            <span class="colorred">*</span>
+            <div class="hover-text">
+                <i class="fa-solid fa-question fa-beat fa-2xs"></i>
+                <span class="tooltip-text" id="top">These are the options that members will be able to vote on within a poll.</span>
+            </div>
+            <div id="inputFields">
+                <div class="input-field">
+                    <input type="text" id="minReqField1" required class="form-options" name="field1"><br>
+                    <input type="text" id="minReqField2" required class="form-options" name="field2">
+                </div>
+            </div>
+            <button type="button" id="addInputFieldBtn" class="btn btn-success btn-sm">
+                    <strong>+</strong>
+            </button>           
+            <br>
+            <button type="button" class="btn btn-primary Save_btns" id="submitBtn">Create</button>
+        }
+
+        <script>
+            var fieldCounter = 2;
+
+            $(document).ready(function () {
+                $('#addInputFieldBtn').click(function () {
+                    fieldCounter++;
+                    var inputFields = $('#inputFields');
+                    var newField = $('<div class="input-field">' +
+                        
+                        '<input type="text" class="field form-options"name="field' + fieldCounter + '" required>' +
+                        '<button type="button" class="remove-input-field"><span class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Remove Attendee">❌</span></button>' +
+                        '</div>');
+                    inputFields.append(newField);
+                });
+
+                $('#inputFields').on('click', '.remove-input-field', function () {
+                    $(this).parent().remove();
+                });
+
+                $('#submitBtn').click(function () {
+                    $("#divError").empty()
+                    $('#divError').hide();
+                    var csrfToken = $('input[name="__RequestVerificationToken"]').val();
+                    var formData = $('#myForm').serialize();                 
+                    $.ajax({
+                    url: '@Url.Action("Create", "Polls")',
+                    type: 'POST',
+                    data: formData,
+                    headers: { '__RequestVerificationToken': csrfToken },
+                    success: function (response) {
+                        if (response.redirectID == 0 || response.redirectID ==undefined) {
+                            location.reload();
+                        }else{
+                            window.location = response.redirectID;
+                        }
+                    },
+                    error: function (error) {
+                        $.each(JSON.parse(error.responseText), function (index,val) {
+                            $('#divError').append('<li>' + val + '</li>');
+                        });
+                        $('#divError').show('fade');
+                               
+                    }
+                });
+                           
+                });
+            });
+        </script>
+
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+     <link rel="stylesheet" href="~/css/SearchableDDL.css" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="text/jscript">
+        $(function () {
+            $("#PACID").select2();
+        });
+    </script>
+}

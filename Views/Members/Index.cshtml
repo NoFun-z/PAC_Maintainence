@@ -1,0 +1,479 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.Member>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@if (User.IsInRole("Admin"))
+{
+    <h1>MAINTAIN ACCOUNTS</h1>
+}
+@if (User.IsInRole("Staff"))
+{
+    <h1>MEMBERS</h1>
+}
+<br />
+
+@if (!User.IsInRole("Staff"))
+{
+    <a id="btn_Download" style="color: white; font-weight: bold; background-color: #0073cf; padding: 8px 16px; text-decoration: none; float: right !important"
+   asp-action="DownloadReport" asp-controller="TeamMembers" class="btn float-end">DOWNLOAD MEMBERS</a>
+}
+<style>
+
+    #btn_Download:hover {
+        background-color: #155d97 !important;
+    }
+
+
+
+    .templateDownload {
+        display: inline-block;
+    }
+
+    table tbody tr {
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    h1 {
+        margin-left: 12px;
+    }
+
+    .Acc_Roles {
+        background-color: #0073cf;
+        font-weight: bold;
+        border-radius: 6px;
+        padding: 8px 12px;
+        text-decoration: none;
+        margin: 10px 5px;
+    }
+
+        .Acc_Roles:hover {
+            background-color: #155d97
+        }
+
+    .Acc_Details {
+        background-color: #565656;
+        color: white;
+        font-weight: bold;
+        border-radius: 6px;
+        padding: 8px 12px;
+        text-decoration: none;
+        margin: 10px 5px;
+    }
+
+        .Acc_Details:hover {
+            background-color: #787878;
+        }
+
+    .Web_Push {
+        background-color: #08A732;
+        color: white;
+        font-weight: bold;
+        border: #156741;
+        border-radius: 6px;
+        padding: 8px 12px;
+        text-decoration: none;
+        margin-left: 12px;
+    }
+
+        .Web_Push:hover {
+            background-color: #10712A;
+        }
+
+    .btn_Create {
+        background-color: #08A732;
+        color: white;
+        font-weight: bold;
+        border: #156741;
+        border-radius: 6px;
+        padding: 8px 12px;
+        text-decoration: none;
+        margin-top: 0px;
+        /*margin-left: 12px;*/
+    }
+
+        .btn_Create:hover {
+            background-color: #10712A;
+            color: white;
+        }
+
+    .Acc_Edit {
+        background-color: #0073cf;
+        font-weight: bold;
+        border: #426F76;
+        border-radius: 6px;
+        padding: 8px 12px;
+        text-decoration: none;
+        margin: 10px 5px;
+    }
+
+        .Acc_Edit:hover {
+            background-color: #155d97
+        }
+
+    .Acc_Arc {
+        background-color: red;
+        color: #fff;
+        font-weight: bold;
+        border: #565656;
+        border-radius: 6px;
+        padding: 8px 12px;
+        text-decoration: none;
+        margin: 10px 5px;
+    }
+
+        .Acc_Arc:hover {
+            background-color: darkred;
+        }
+
+</style>
+
+@*Populate Pac ddl with related division fk*@
+<script type="text/jscript">
+    $(document).ready(function () {
+        if ($("#divisionfilter").val() === "") {
+            $.getJSON('/Members/GetPacList2/', function (data) {
+                var items = "<option value=''>" + "All Pacs" + "</option>"; // corrected line
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#pacfilter').html(items);
+            });
+        }
+        else {
+            $.getJSON('/Members/GetPacList/' + $('#divisionfilter').val(), function (data) {
+                var items = "<option value=''>" + "All Pacs" + "</option>";
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#pacfilter').html(items);
+            });
+        }
+
+
+        $("#divisionfilter").on("change", function () {
+            // check if the selected value is the first option
+            if ($(this).val() === "") {
+                $.getJSON('/Members/GetPacList2/', function (data) {
+                    var items = "<option value=''>" + "All Pacs" + "</option>"; // corrected line
+                    $.each(data, function (i, PAC) {
+                        items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                    });
+                    $('#pacfilter').html(items);
+                });
+            }
+            else {
+                $.getJSON('/Members/GetPacList/' + $('#divisionfilter').val(), function (data) {
+                    var items = "<option value=''>" + "All Pacs" + "</option>";
+                    $.each(data, function (i, PAC) {
+                        items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                    });
+                    $('#pacfilter').html(items);
+                });
+            }
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            if ($("#success-message").is(":visible")) {
+                $("#success-message").fadeOut("slow");
+            }
+        }, 4500); //Change the duration (in milliseconds) to whatever you prefer
+
+        setTimeout(function () {
+            if ($("#NotificationAcc").is(":visible")) {
+                $("#NotificationAcc").fadeOut("slow");
+            }
+        }, 4500);
+    });
+</script>
+
+
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a id="btn_Create" class="btn_Create btn btn-success" asp-controller="TeamMembers" asp-action="Create">CREATE NEW ACCOUNT</a>
+    </p>
+}
+
+@if (User.IsInRole("Admin"))
+{
+    <form class="bkgAcc" asp-action="InsertFromExcel" asp-controller="TeamMembers" method="post" enctype="multipart/form-data">
+        <div style="margin-top: 10px" class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <h6>Bulk Upload Members From Excel (.xlxs)</h6>
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" name="theExcel" id="theExcel">
+                        <input type="submit" value="Upload Data" class="btn btn-primary btn_Filter" style="margin-left: 10px" />
+                    </div>
+                </div>
+                @*<div class="form-group">
+            <input type="submit" value="Upload Data" class="btn btn-primary btn_Filter" />
+            </div>*@
+            </div>
+        </div>
+        <h6>Members Excel Template: </h6>
+        <a class="btn btn-primary btn_Filter" style="text-decoration: none; margin-bottom: 10px" href="@Url.Action("DownloadFile", "Members", new { fileName = "../wwwroot/Images/UploadTemplate.xlsx" })">Download Template</a>
+    </form>
+}
+
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <div class="form-horizontal">
+        <button font-weight: bolder;" class="btn @(ViewData["Filtering"]) btn_Filter" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+            Filter/Search
+        </button>
+        <div class="collapse" id="collapseFilter">
+            <div class="card card-body bg-light">
+                <div class="row">
+                    <div class="d-block d-lg-none">
+                        <div class="form-group">
+                            <label class="control-label">Sort By:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" class="" value="desc"
+                                        @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+                                               name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+                                    </div>
+                                </div>
+                                <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Search Member Name:</label>
+                        @Html.TextBox("SearchString", null, new { @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by School:</label>
+                        @Html.DropDownList("AcademicDivisionID", null, "All Schools", htmlAttributes: new {@id = "divisionfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by PAC:</label>
+                        @Html.DropDownList("PACID", null, "All Pacs", htmlAttributes: new {@id = "pacfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4 align-self-end">
+                        <input type="submit" name="submitButton" value="Apply" class="btn btn-outline-primary" />
+                        <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="success-message" class="alert alert-success" style="margin-left: 12px">
+            <strong>SUCCESS!</strong> @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["FailureMessage"] != null)
+    {
+        <div id="failure-message" class="alert alert-danger" style="margin-left: 12px">
+            <strong>FAILURE!</strong> @TempData["FailureMessage"]
+        </div>
+    }
+    <div class="container-fluid d-block d-lg-none">
+        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+        {
+            <button type="button" class="Acc_Arc" style="font-weight: bolder; padding: 5px 8px; margin-bottom: 5px" onclick="location.href='@Url.Action("Index", "ArchivedData")'">
+                ARCHIVED ACCOUNTS
+            </button>
+        }
+
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.FullName)</strong></h5>
+                    <div class="card-body">
+                        <figure class="row">
+                            <figcaption class="col">
+                                <p class="card-text">
+                                    @*Card Text goes Here*@
+                                <p class="card-text">
+                                        @*Card Text goes Here*@
+                                    <dl class="row lh-1">
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.PersonalPhoneFormatted)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.PersonalPhoneFormatted)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.Email)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.Email)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                                @Html.DisplayNameFor(model => model.PAC)
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.PAC.PACName)
+                                        </dd>
+                                        <dt class="col-3 text-truncate">
+                                            Role
+                                        </dt>
+                                        <dd class="col-9">
+                                                @Html.DisplayFor(modelItem => item.MemberRole)
+                                        </dd>
+                                    </dl>
+
+                            </figcaption>
+                        </figure>
+                        <div class="card-footer" style="padding:0px">
+                            <td>
+                                @if (!User.IsInRole("Staff"))
+                                {
+                                    <a class="Acc_Edit" data-toggle="tooltip" title="Edit Account Profile" asp-action="Edit" asp-route-id="@item.ID"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                                }
+                                <a class="Acc_Details" data-toggle="tooltip" title="Details of Account" asp-action="Index" asp-controller="MemberActionItems" class="btn-details" asp-route-MemberID="@item.ID"><i class="fa-solid fa-circle-info" style="color: #ffffff;"></i></a>
+                                @*<a class="Acc_Details" data-toggle="tooltip" title="Details of Account" asp-action="Details" asp-route-id="@item.ID"><i class="fa-solid fa-square-info fa-sm" style="color: #ffffff;"></i></a>*@
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="Acc_Roles" data-toggle="tooltip" title="Edit Account security roles" asp-controller="TeamMembers" asp-action="Edit" asp-route-id="@item.ID"><i class="fa-solid fa-user-gear" style="color: #ffffff;"></i></a>
+                                    @if (item.Subscriptions.Count() > 0)
+                                    {
+                                        <a class="Acc_Edit" data-toggle="tooltip" title="Send Push Notification" asp-controller="WebPush" asp-action="Send" asp-route-id="@item.ID"><i class="fas fa-paper-plane" style="color: #ffffff;"></i></a>
+                                    }
+                                    <a class="Acc_Arc" data-toggle="tooltip" title="Archive an account" asp-controller="TeamMembers" asp-action="Archive" asp-route-id="@item.ID"><i class="fa-solid fa-box-archive" style="color: #ffffff;"></i></a>
+                                }
+                            </td>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+    <div class="d-none d-lg-block">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="FIRST NAME ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="LAST NAME ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" disabled value="PHONE" class="btn" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="EMAIL ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" value="PAC ↕" class="btn" />
+                    </th>
+                    <th>
+                        <input type="submit" disabled value="ROLE" class="btn" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+                    </th>
+                    <th>
+                        @if (!User.IsInRole("Staff"))
+                        {
+                            <button type="button" class="Acc_Arc" style="font-weight: bolder; padding: 5px 8px; margin-bottom: 5px" onclick="location.href='@Url.Action("Index", "ArchivedData")'">
+                                ARCHIVED ACCOUNTS
+                            </button>
+                        }
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PersonalPhoneFormatted)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PAC.PACName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MemberRole)
+                        </td>
+                        @*                        @if (User.IsInRole("Admin"))
+                    {
+                    @foreach (var m in ViewData["MemberWithRoles"] as )
+                    {
+
+                    }
+                    }*@
+                        @*
+                    <td>
+                    @{
+                    int fileCount = item.MemberDocuments.Count;
+                    if (fileCount > 0)
+                    {
+                    var firstFile = item.MemberDocuments.FirstOrDefault(); ;
+                    if (fileCount > 1)
+                    {
+                    <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(item.ID)" aria-expanded="false" aria-controls="collapseDocs@(item.ID)">
+                    <span class="badge badge-info">@fileCount</span> Documents...
+                    </a>
+                    <div class="collapse" id="collapseDocs@(item.ID)">
+                    @{
+                    foreach (var d in item.MemberDocuments)
+                    {
+                    <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                    }
+                    }
+                    </div>
+                    }
+                    else
+                    {
+                    <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                    }
+                    }
+                    }
+                    </td>
+                    *@
+                        <td>
+                            @if (!User.IsInRole("Staff"))
+                            {
+                                <a class="Acc_Edit" data-toggle="tooltip" title="Edit Account Profile" asp-action="Edit" asp-route-id="@item.ID"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                            }
+                            <a class="Acc_Details" data-toggle="tooltip" title="Details of Account" asp-action="Index" asp-controller="MemberActionItems" class="btn-details" asp-route-MemberID="@item.ID"><i class="fa-solid fa-circle-info" style="color: #ffffff;"></i></a>
+                            @*<a class="Acc_Details" data-toggle="tooltip" title="Details of Account" asp-action="Details" asp-route-id="@item.ID"><i class="fa-solid fa-square-info fa-sm" style="color: #ffffff;"></i></a>*@
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="Acc_Roles" data-toggle="tooltip" title="Edit Account security roles" asp-controller="TeamMembers" asp-action="Edit" asp-route-id="@item.ID"><i class="fa-solid fa-user-gear" style="color: #ffffff;"></i></a>
+                                @if (item.Subscriptions.Count() > 0)
+                                {
+                                    <a class="Acc_Edit" data-toggle="tooltip" title="Send Push Notification" asp-controller="WebPush" asp-action="Send" asp-route-id="@item.ID"><i class="fas fa-paper-plane" style="color: #ffffff;"></i></a>
+                                }
+                                <a class="Acc_Arc" data-toggle="tooltip" title="Archive an account" asp-controller="TeamMembers" asp-action="Archive" asp-route-id="@item.ID"><i class="fa-solid fa-box-archive" style="color: #ffffff;"></i></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_PagingNavBar" />
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/refreshDDL.js"></script>
+}

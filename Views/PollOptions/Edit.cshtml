@@ -1,0 +1,37 @@
+﻿@model NiagaraCollegeProject.Models.PollOption
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit Poll Option for: @Model.Poll.Question</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <label asp-for="OptionText" class="control-label"></label>
+                <input asp-for="OptionText" class="form-control" />
+                <span asp-validation-for="OptionText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input asp-for="Votes" type="hidden"class="form-control" />
+            </div>
+          
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary Save_btns"><i class="fa-solid fa-check"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Details" asp-controller="Polls" asp-route-id="@Model.PollID">Back to Poll Details</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

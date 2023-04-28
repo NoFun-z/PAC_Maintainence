@@ -1,0 +1,218 @@
+﻿@model NiagaraCollegeProject.Models.Poll
+
+@{
+    ViewData["Title"] = "Details";
+    IEnumerable<NiagaraCollegeProject.Models.PollOption> pollOptions = ViewBag.pollOptions;
+}
+<!-- CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet" />
+
+<!-- JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+
+@{
+    var activeTab = "table1";
+}
+
+
+
+<script>
+    $(document).ready(function () {
+        // Get the ID of the active tab from the ViewBag.ActiveTab property
+        var activeTab = '@ViewBag.ActiveTab';
+
+        // Update the active state of the tabs based on the activeTab parameter
+        $(`#${activeTab}-tab`).addClass("active");
+        $(`#${activeTab}`).addClass("show active");
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            if ($("#success-message").is(":visible")) {
+                $("#success-message").fadeOut("slow");
+            }
+        }, 4500); //Change the duration (in milliseconds) to whatever you prefer
+
+        setTimeout(function () {
+            if ($("#NotificationAcc").is(":visible")) {
+                $("#NotificationAcc").fadeOut("slow");
+            }
+        }, 4500);
+    });
+</script>
+<h1>Poll Details</h1>
+
+<div>
+    <hr />
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="success-message" class="alert alert-success" style="margin-left: 12px">
+            <strong>SUCCESS!</strong> @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["FailureMessage"] != null)
+    {
+        <div id="failure-message" class="alert alert-danger" style="margin-left: 12px">
+            <strong>FAILURE!</strong> @TempData["FailureMessage"]
+        </div>
+    }
+
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Question)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Question)
+        </dd>
+        <dt class = "col-sm-2">
+            Active Status
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.isActive)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ExpiryDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ExpiryDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PAC)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PAC.PACName)
+        </dd>
+    </dl>
+</div>
+<div class="container">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link @((activeTab == "table1") ? "active" : "")" href="#table1" id="table1-tab" data-toggle="tab" role="tab" aria-controls="table1" aria-selected="@((activeTab == "table1") ? "true" : "false")">Poll Options</a>
+        </li>
+        @*<li class="nav-item">
+            <a class="nav-link @((activeTab == "table2") ? "active" : "")" href="#table2" id="table2-tab" data-toggle="tab" role="tab" aria-controls="table2" aria-selected="@((activeTab == "table2") ? "true" : "false")">Poll Results</a>
+        </li> *@
+    </ul>
+    <div class="tab-content">
+        <div class="tab-content">
+            <div class="tab-pane fade @((activeTab == "table1") ? "show active" : "")" id="table1" role="tabpanel" aria-labelledby="table1-tab">
+                <!-- Table 1 content goes here -->
+                <form asp-action="Index" method="get">
+                   
+                    <br />
+                 
+                    <div class="container-fluid d-block d-lg-none">
+
+                        <div class="row">
+                          
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                    {
+                                            <a asp-controller="Polls" asp-action="Add" asp-route-PollID="@Model.ID" asp-route-PollQuestion="@Model.Question">
+                                            <span class="btn btn-success" data-bs-toggle="tooltip"
+                                              title="Add Attendee"><strong>&#x271A; Add</strong></span>
+                                        </a>
+                                    }
+                            @{
+                                int totalVotes = 0;
+                            }
+                            @foreach (var item in pollOptions)
+                            {
+                                totalVotes += item.Votes;
+                            //Make a card for each one
+                                <div class="card mb-sm-3" style="min-width: 18rem;">
+                                    <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.OptionText)</strong></h5>
+                                    <div class="card-body">
+                                        <figure class="row">
+                                            <figcaption class="col">
+                                                <p class="card-text">
+                                                    @*Card Text goes Here*@
+                                                <p class="card-text">
+                                                        @*Card Text goes Here*@
+                                                    <dl class="row lh-1">
+                                                        <dt class="col-3 text-truncate">
+                                                            Total Votes
+                                                        </dt>
+                                                        <dd class="col-9">
+                                                                @Html.DisplayFor(modelItem => item.Votes) Out Of @totalVotes Votes
+                                                    </dd>
+                                                    </dl>
+                                                </p>
+                                            </figcaption>
+                                        </figure>
+                                        <div class="card-footer">
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                                <a class="Acc_Edit" data-toggle="tooltip" title="Poll Details" asp-controller="PollOptions" asp-action="Edit" asp-route-id="@item.ID"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                                                <a class="btn-delete" data-toggle="tooltip" title="Delete Poll Option" asp-controller="PollOptions" asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="d-none d-lg-block">
+                        <table class="table">
+                            <thead>
+                                <colgroup>
+                                    <col span="1" />
+                                    <col span="1" />
+                                    <col span="1" />
+                                   
+                                </colgroup>
+                                <tr>
+                                    <th>
+                                        <input type="submit" value="Option Text/Question" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;">
+                                    </th>
+                                    <th>
+                                        <input type="submit" value="Total Votes" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;">
+                                    </th>
+                                    <th>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                    {
+                                            <a asp-controller="Polls" asp-action="Add" asp-route-PollID="@Model.ID" asp-route-PollQuestion="@Model.Question">
+                                            <span class="btn btn-success" data-bs-toggle="tooltip"
+                                              title="Add Attendee"><strong>&#x271A; Add</strong></span>
+                                        </a>
+                                    }
+                                </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in pollOptions)
+                                {
+                                    totalVotes += item.Votes;
+
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.OptionText)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Votes) Out Of @totalVotes Votes
+                                        </td>     
+                                        <td>
+                                            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                        {
+                                                <a class="Acc_Edit" data-toggle="tooltip" title="Poll Option Details" asp-controller="PollOptions" asp-action="Edit" asp-route-id="@item.ID"><i class="fa-solid fa-pen-to-square " style="color: #ffffff;"></i></a>
+                                                <a class="btn-delete" data-toggle="tooltip" title="Delete Poll Option" asp-controller="PollOptions" asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+
+                                        }
+                                        </td>
+                                    </tr>
+                                }
+  
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+    </div>
+</div>
+</div>
+<div>
+    <a class="btn btn-primary Save_btns" data-toggle="tooltip" title="Edit Account Profile" asp-action="Edit" asp-route-id="@Model?.ID"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+    <a asp-action="Index" class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+</div>

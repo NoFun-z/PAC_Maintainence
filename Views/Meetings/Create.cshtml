@@ -1,0 +1,175 @@
+﻿@model NiagaraCollegeProject.Models.Meeting
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<h1>Create Meeting</h1>
+
+<script type="text/jscript">
+    $(function () {
+        $(document).ready(function () {
+            $.getJSON('/Meetings/GetPacList/' + $('#cbodivision').val(), function (data) {
+                var items = '';
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#pacid').html(items);
+            });
+        });
+    });
+</script>
+
+<script type="text/jscript">
+    $(function () {
+        $('#cbodivision').change(function () {
+            $.getJSON('/Meetings/GetPacList/' + $('#cbodivision').val(), function (data) {
+                var items = '';
+                $.each(data, function (i, PAC) {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#pacid').html(items);
+
+                var pacID = $('#pacid').val(); // Get the selected PACID
+                var url = "/Meetings/PopulateCreateAttendeesData";
+                // Make an AJAX request to the controller action
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    data: { pacID: pacID },
+                    success: function (result) {
+                        // Clear the list boxes first
+                        $("#availOptions").empty();
+                        $("#selectedOptions").empty();
+
+                        // Loop through the returned data and append the options to the list boxes
+                        $.each(result.selOpts, function (index, option) {
+                            $("#selectedOptions").append('<option value="' + option.value + '">' + option.text + '</option>');
+                        });
+
+                        $.each(result.availOpts, function (index, option) {
+                            $("#availOptions").append('<option value="' + option.value + '">' + option.text + '</option>');
+                        });
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+@*/Get only the attendees list within that meeting PAC*@
+<script type="text/jscript">
+
+    $(function () {
+        // Select the dropdown list by its id
+        $('#pacid').change(function () {
+            var pacID = $('#pacid').val(); // Get the selected PACID
+            var url = "/Meetings/PopulateCreateAttendeesData";
+            // Make an AJAX request to the controller action
+            $.ajax({
+                url: url,
+                type: "GET",
+                data: { pacID: pacID },
+                success: function (result) {
+                    // Clear the list boxes first
+                    $("#availOptions").empty();
+                    $("#selectedOptions").empty();
+
+                    // Loop through the returned data and append the options to the list boxes
+                    $.each(result.selOpts, function (index, option) {
+                        $("#selectedOptions").append('<option value="' + option.value + '">' + option.text + '</option>');
+                    });
+
+                    $.each(result.availOpts, function (index, option) {
+                        $("#availOptions").append('<option value="' + option.value + '">' + option.text + '</option>');
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+<hr />
+
+
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="form-group col-md-6">
+                <div class="form-group">
+                <label asp-for="AcademicDivisionID" class="control-label">School Of</label>
+                <select asp-for="AcademicDivisionID" id="cbodivision" class ="form-control" asp-items="ViewBag.AcademicDivisionID">
+                        <option selected="selected" value="">Please Select a School</option>
+                </select>
+                <span asp-validation-for="AcademicDivisionID" class="text-danger"></span>
+
+            </div>
+            <div class="form-group">
+                <label asp-for="PACID" class="control-label">PAC</label>
+                <select asp-for="PACID" id="pacid" class ="form-control" asp-items="ViewBag.PACID">
+                        <option selected="selected" value="">Please Select a PAC</option>
+                </select>
+                <span asp-validation-for="PACID" class="text-danger"></span>
+            </div>
+                <div class="form-group">
+                    <label asp-for="MemberID" class="control-label">Recording Assistant</label><span class="colorred">*</span>
+                    <select asp-for="MemberID" id="MemberID" class="form-control" asp-items="ViewBag.MemberID">
+                        <option selected="selected" value="">Please Select a Recording Assistant</option>
+
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MeetingTopicName" class="control-label"></label><span class="colorred">*</span>
+                    <input asp-for="MeetingTopicName" class="form-control" />
+                    <span asp-validation-for="MeetingTopicName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MeetingStartTimeDate" class="control-label"></label><span class="colorred">*</span>
+                    <input asp-for="MeetingStartTimeDate" class="form-control" />
+                    <span asp-validation-for="MeetingStartTimeDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label custom-file-label">Upload Meeting Documents:</label>
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" name="theFiles" multiple="multiple">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-md-3">
+                <label class="control-label">Add Member to Meeting</label> <button type="button" id="btnLeft" class="btn btn-success btn-sm">
+                    <strong>+</strong>
+                </button>
+                @Html.ListBox("availOptions", (MultiSelectList)ViewBag.availOpts, new { @size = 12, @class = "form-control" })
+            </div>
+            <div class="form-group col-md-3">
+                <label class="control-label">Remove Member From Meeting</label> <button type="button" id="btnRight" class="btn btn-danger btn-sm">
+                    <strong>-</strong>
+                </button>
+                @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.selOpts, new { @size = 12, @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary Save_btns" />
+                <a asp-action="Index" class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    <script src="~/js/multiselect.js"></script>
+    }
+    <link rel="stylesheet" href="~/css/SearchableDDL.css" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="text/jscript">
+        $(function () {
+            $("#MemberID").select2();
+            $("#MeetingID").select2();
+        });
+    </script>
+}

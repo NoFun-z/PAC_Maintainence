@@ -1,0 +1,85 @@
+﻿@model NiagaraCollegeProject.Models.ActionItem
+
+<h1>Details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AgendaName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AgendaName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Comments)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Comments)
+        </dd>
+        <dt class="col-sm-2">
+            Due Date
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TaskDueDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Completed)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Completed)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Meeting)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Meeting.MeetingTopicName)
+        </dd>
+        <dt class="col-sm-2">
+            Assigned To
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Member.FullName)
+        </dd>
+        <div class="form-group">
+            <label><strong>Supporting Documents:</strong></label>
+            <div class="ml-sm-10">
+                @{
+                    int fileCount = Model.ActionDocuments.Count;
+                    if (fileCount > 0)
+                    {
+                        var firstFile = Model.ActionDocuments.FirstOrDefault(); ;
+                        if (fileCount > 1)
+                        {
+                            <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(Model.ID)" aria-expanded="false" aria-controls="collapseDocs@(Model.ID)">
+                                <span class="badge badge-info">@fileCount</span> Current Documents...
+                            </a>
+                            <div class="collapse" id="collapseDocs@(Model.ID)">
+                                @{
+                                    foreach (var d in Model.ActionDocuments)
+                                    {
+                                        <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                    }
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" class="btn btn-primary Save_btns" asp-route-id="@Model?.ID">Edit</a>
+    <a asp-action="Index" class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+</div>

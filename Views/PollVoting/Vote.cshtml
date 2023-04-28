@@ -1,0 +1,59 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.PollOption>
+<h1>Vote</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-5">
+        <div id="radio">
+            <h3>Question: @TempData["PollName"]</h3>                   
+                @foreach (var pollOption in Model)
+                {
+                    @Html.RadioButton(pollOption.OptionText, pollOption.ID, pollOption.ID) @:&nbsp; @pollOption.OptionText &nbsp; <br>
+                }
+        </div>     
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+
+        $("input:radio").on("change", function () {
+                        $.ajax({
+                            type: "POST",
+                    url: "/PollVoting/VoteConfirmed",
+                            data: 
+                            JSON.stringify($(this).val()),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                if (response != null) {
+                                    console.log(response.responseText);
+                                    window.location.href = "/PollVoting/";
+                                } else {
+                                    console.log("Something went wrong");
+
+                                }
+                            },
+                            failure: function (response) {
+                                console.log(response.responseText);
+                                window.location.href = "/PollVoting/";
+
+                            },
+                            error: function (response) {
+                                console.log(response.responseText);
+                                window.location.href = "/PollVoting/";
+                            }
+                        });                  
+        });
+
+    });
+
+</script>
+
+@section Scripts {
+    @{
+        
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

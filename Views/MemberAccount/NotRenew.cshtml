@@ -1,0 +1,32 @@
+﻿@model NiagaraCollegeProject.ViewModels.MemberVM
+
+
+<h1>Dont Renew</h1>
+
+<h3>Are you sure you dont want to renew your account?</h3>
+<span style="color: red; font-weight: bold;">Once your renewal date is up you won't be
+    able to login. You would need to contact your supervisor or PAC leader to restore your account.</span>
+    <br/>
+<div>
+
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FullName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FullName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+    </dl>
+
+    <form asp-action="NotRenew">
+        <input type="hidden" asp-for="ID" />
+        <input type="submit" value="Confirm" class="btn btn-danger" />
+        <a asp-action="Index" class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+    </form>
+</div>

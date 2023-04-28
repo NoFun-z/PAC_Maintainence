@@ -1,0 +1,57 @@
+﻿@model NiagaraCollegeProject.Models.Poll
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Poll Edit</h1>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <label asp-for="Question" class="control-label"></label><span class="colorred">*</span>
+                <input asp-for="Question" class="form-control" />
+                <span asp-validation-for="Question" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="isActive" /> Active Status
+                </label><span class="colorred">*</span>
+                <div class="hover-text">
+                    <i class="fa-solid fa-question fa-beat fa-2xs"></i>
+                    <span class="tooltip-text" id="top">A poll can be made inactive at anytime stoping voting.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExpiryDate" class="control-label"></label><span class="colorred">*</span>
+                <div class="hover-text">
+                    <i class="fa-solid fa-question fa-beat fa-2xs"></i>
+                    <span class="tooltip-text" id="top">Once a poll reaches its expiry date members will not longer be able to vote.</span>
+                </div>
+                <input asp-for="ExpiryDate" class="form-control" />
+                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PacID" class="control-label"></label><span class="colorred">*</span>
+                <select asp-for="PacID" class="form-control" asp-items="ViewBag.PacID"></select>
+                <span asp-validation-for="PacID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary Save_btns"><i class="fa-solid fa-check"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Details" asp-route-id="@Model?.ID">Back to Details</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

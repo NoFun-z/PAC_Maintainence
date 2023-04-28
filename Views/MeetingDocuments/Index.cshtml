@@ -1,0 +1,113 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.MeetingDocuments>
+
+
+<h1>Meeting Documents</h1>
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <div class="form-horizontal">
+        <button class="btn @(ViewData["Filtering"])" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter" data-toggle="tooltip" title="Filter or Search Meeting Documents">
+            Filter/Search
+        </button>
+        <div class="collapse" id="collapseFilter">
+            <div class="card card-body bg-light">
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by Meeting:</label>
+                        @Html.DropDownList("MeetingID", null, "All Meetings", htmlAttributes: new { @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="control-label">Start Date:</label>
+                        <input type="date" name="StartDate" class="form-control"
+                               value="@((string) TempData["StartDate"])" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="control-label">End Date:</label>
+                        <input type="date" name="EndDate" class="form-control"
+                               value="@((string) TempData["EndDate"])" />
+                    </div>
+                    <div class="form-group col-md-4 align-self-end">
+                        <input type="submit" name="actionButton" value="Filter" class="btn btn-outline-primary" />
+                        <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="success-message" class="alert alert-success">
+            <strong>SUCCESS !</strong> @TempData["SuccessMessage"]
+        </div>
+    }
+    <table class="table">
+        <thead>
+            <colgroup class="table">
+                <col span="1" />
+                <col span="1" />
+                <col span="1" />
+                <col span="1" />
+                <col span="1" />
+            </colgroup>
+            <tr>
+                <th>
+                    <input type="submit" name="actionButton" value="Meeting ↕" class="btn" style="color: black; font-weight: bolder; margin-bottom: 0; padding-bottom: 0;" />
+                    @{
+                        int totalMinutes = 0;
+                    }
+                </th>
+                <th>
+                    <input type="submit" disabled value="FileName" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+                </th>
+                <th>
+                    <input type="submit" name="actionButton" value="UploadedDate ↕" class="btn" style="color: black; font-weight: bolder; margin-bottom: 0; padding-bottom: 0;" />
+                </th>
+                <th>
+                </th>
+                <th>
+                    <button type="button" class="Acc_Arc" style="color: black; font-weight: bolder; padding: 5px 8px; margin-bottom: 5px" data-toggle="tooltip" title="Archived Meeting Minutes" onclick="location.href='@Url.Action("Index", "ArchivedMeetingMinutes")'">
+                        <i class="fa-solid fa-box-archive" style="color: #ffffff;"></i>
+                    </button>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                totalMinutes += 1;
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Meeting.MeetingTopicName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FileName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UploadedDate)
+                    </td>
+                    <td>
+                        <a asp-action="Download" asp-route-id="@item.ID" class="btn-download">Download</a>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                        {
+                            <a class="Acc_Arc" data-toggle="tooltip" title="Archive a meeting minute" asp-action="Archive" asp-route-id="@item.ID" data-toggle="tooltip" title="Archived Meeting Minutes">Archive</a>
+                        }
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td></td>
+                <td align="right">
+                    total MeetingMinutes:
+                </td>
+                <td>
+                    <strong>@totalMinutes</strong>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    <partial name="_PagingNavBar" />
+</form>

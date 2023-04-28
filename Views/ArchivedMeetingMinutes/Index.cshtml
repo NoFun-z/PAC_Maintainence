@@ -1,0 +1,83 @@
+﻿@model List<NiagaraCollegeProject.Models.MeetingDocuments>
+
+<h1>Archived Meeting Minute(s)</h1>
+<br />
+
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <div class="form-horizontal">
+        <button class="btn @(ViewData["Filtering"])" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter" data-toggle="tooltip" title="Filter or Search Meeting Documents">
+            Filter/Search
+        </button>
+        <div class="collapse" id="collapseFilter">
+            <div class="card card-body bg-light">
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by Meeting:</label>
+                        @Html.DropDownList("MeetingID", null, "All Meetings", htmlAttributes: new { @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="control-label">Start Date:</label>
+                        <input type="date" name="StartDate" class="form-control"
+                               value="@((string) TempData["StartDate"])" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="control-label">End Date:</label>
+                        <input type="date" name="EndDate" class="form-control"
+                               value="@((string) TempData["EndDate"])" />
+                    </div>
+                    <div class="form-group col-md-4 align-self-end">
+                        <input type="submit" name="actionButton" value="Filter" class="btn btn-outline-primary" />
+                        <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <input type="submit" name="actionButton" value="MEETING ↕" class="btn" style="color: white; font-weight: bolder; margin-bottom: 0; padding-bottom: 0;" />
+                </th>
+                <th>
+                    <input type="submit" disabled value="FILE NAME" class="btn" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+                </th>
+                <th>
+                    <input type="submit" name="actionButton" value="UPLOADED DATE ↕" class="btn" style="color: white; font-weight: bolder; margin-bottom: 0; padding-bottom: 0;" />
+                </th>
+                <th>
+                </th>              
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Meeting.MeetingTopicName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FileName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UploadedDate)
+                    </td>
+                    <td>
+                        @*<a asp-action="Download" asp-route-id="@item.ID" class="btn-download">Download</a>*@
+                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                        {
+                            @Html.ActionLink("Restore", "Restore", new { id = item.ID }, new { @class="btn-restore" })
+                            <a asp-action="Delete" class="btn-delete" asp-route-id="@item.ID">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <partial name="_PagingNavBar" />
+</form>
+
+

@@ -1,0 +1,97 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.Poll>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            if ($("#success-message").is(":visible")) {
+                $("#success-message").fadeOut("slow");
+            }
+            if ($("#failure-message").is(":visible")) {
+                $("#failure-message").fadeOut("slow");
+            }
+        }, 4500); //Change the duration (in milliseconds) to whatever you prefer
+    });
+</script>
+
+<style>
+    .link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #0073cf;
+    border-radius: 10px;
+    padding: 5px 15px; 
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    transition: all 0.3s ease-in-out;
+    font-size: 0.9em; 
+}
+
+    .link:hover {
+        background-color: #155d97;
+        color: #fff;
+        transform: scale(1.05);
+    }
+
+
+    .link h5 {
+        margin: 0;
+        font-size: 1.5em;
+    }
+
+    .vote-card-header{
+        border-radius: 10px;
+        max-width:85%;
+        padding: 10px;
+    }
+    p{
+        font-size:1.3rem;
+    }
+</style>
+
+<h1>CURRENT POLLS</h1>
+
+<hr />
+  
+
+@if (Accessor.HttpContext.Session.GetString("SuccessMessage") != null)
+{
+    <div id="success-message" class="alert alert-success" style="margin-left: 12px">
+        <strong>SUCCESS!</strong> @Accessor.HttpContext.Session.GetString("SuccessMessage")
+    </div>
+}
+@if (Accessor.HttpContext.Session.GetString("FailureMessage") != null)
+{
+    <div id="failure-message" class="alert alert-danger" style="margin-left: 12px">
+        <strong>FAILURE!</strong> @Accessor.HttpContext.Session.GetString("FailureMessage")
+    </div>
+}
+@if (@Model.Count() <= 0)
+{
+    <h1>No more polls to vote in.</h1>
+}
+<form asp-action="Index" method="get" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="vote-cards">
+        @foreach (var item in Model)
+        {
+            <a asp-action="Vote" asp-route-id="@item.ID" class="link" styles="background-color: #565656;">
+                <h5 class="vote-card-header">@Html.DisplayFor(modelItem => item.Question)</h5>
+                <p>Click to vote!</p>
+
+            </a>
+            
+        }
+    </div>
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

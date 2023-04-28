@@ -1,0 +1,60 @@
+﻿@model NiagaraCollegeProject.Models.MeetingMinute
+
+<div>
+    <h1>Meeting Minute Details</h1>
+
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MeetingComment)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MeetingComment)
+        </dd>
+        <dt class = "col-sm-2">
+            Archive Status
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsArchived)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Meeting)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Meeting.MeetingTopicName)
+        </dd>
+        <div class="form-group">
+            <label><strong>Meeting Minute Documents:</strong></label>
+            <div class="ml-sm-10">
+                @{
+                    int fileCount = Model.MeetingMinuteDocuments.Count;
+                    if (fileCount > 0)
+                    {
+                        var firstFile = Model.MeetingMinuteDocuments.FirstOrDefault(); ;
+                        if (fileCount > 1)
+                        {
+                            <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(Model.ID)" aria-expanded="false" aria-controls="collapseDocs@(Model.ID)">
+                                <span class="badge badge-info">@fileCount</span> Current Documents...
+                            </a>
+                            <div class="collapse" id="collapseDocs@(Model.ID)">
+                                @{
+                                    foreach (var d in Model.MeetingMinuteDocuments)
+                                    {
+                                        <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                    }
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" class="btn btn-primary Save_btns"asp-route-id="@Model?.ID">Edit</a>
+    <a asp-action="Index" class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+</div>

@@ -1,0 +1,35 @@
+﻿@model NiagaraCollegeProject.Models.MeetingAttendees
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>MeetingAttendees</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Meeting)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Meeting.MeetingTopicName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Meeting)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Meeting.Member.FullName)
+        </dd>
+    </dl>
+</div>
+<div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+    {
+        <a asp-action="Edit" class="btn btn-primary Save_btns" asp-route-id="@Model?.ID">Edit</a>
+    }
+    <a href='@ViewData["returnURL"]' class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+
+</div>
+

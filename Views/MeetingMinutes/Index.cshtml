@@ -1,0 +1,165 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.MeetingMinute>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<script type="text/jscript">
+    $(document).ready(function () {
+        $("#divisionfilter").on("change", function () {
+            // check if the selected value is the first option
+            if ($(this).val() === "") {
+                $.getJSON('/Members/GetPacList2/', function (data) {
+                    var items = "<option value=''>" + "All Schools" + "</option>"; // corrected line
+                    $.each(data, function (i, PAC) {
+                        items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                    });
+                    $('#pacfilter').html(items);
+                });
+            }
+            else {
+                $.getJSON('/Members/GetPacList/' + $('#divisionfilter').val(), function (data) {
+                    var items = '';
+                    $.each(data, function (i, PAC) {
+                        items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                    });
+                    $('#pacfilter').html(items);
+                });
+            }
+        });
+    });
+</script>
+<h1>Meeting Minutes</h1>
+<br />
+<p>
+    <a asp-action="Create" class="btn_Create">Add New Meeting Minutes</a>
+</p>
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <div class="form-horizontal">
+        <button class="btn @(ViewData["Filtering"])" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+            Filter/Search
+        </button>
+        <div class="collapse" id="collapseFilter">
+            <div class="card card-body bg-light">
+                <div class="row">
+                    <div class="d-block d-lg-none">
+                        <div class="form-group">
+                            <label class="control-label">Sort By:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" class="" value="desc"
+                                               @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+                                               name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+                                    </div>
+                                </div>
+                                <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Search By Meeting Minute Comment:</label>
+                        @Html.TextBox("SearchString", null, new { @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by School:</label>
+                        @Html.DropDownList("AcademicDivisionID", null, "All Schools", htmlAttributes: new {@id = "divisionfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Select by PAC:</label>
+                        @Html.DropDownList("PACID", null, "All PACs", htmlAttributes: new {@id = "pacfilter", @class = "form-control"})
+                    </div>
+                    <div class="form-group col-md-4 align-self-end">
+                        <input type="submit" name="submitButton" value="Apply" class="btn btn-outline-primary" />
+                        <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-danger">@TempData["message"]</div>
+    <div class="text-success">@TempData["notificationSent"]</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; btn:hover{color: #e0e2e4}" value="Meeting Comment ↕" class="btn" />
+
+                </th>
+                <th>
+                    <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; btn:hover{color: #e0e2e4}" value="Archive Status ↕" class="btn" />
+                </th>
+                <th>
+                    <input type="submit" name="actionButton" style="color: white; font-weight: bold; margin-bottom: 0; padding-bottom: 0; btn:hover{color: #e0e2e4}" value="Meeting ↕" class="btn" />
+                </th>
+                <th>
+                    Meeting Minute Document
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MeetingComment)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsArchived)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Meeting.MeetingTopicName)
+                    </td>
+                    <td>
+                        @{
+                            int fileCount = item.MeetingMinuteDocuments.Count;
+                            if (fileCount > 0)
+                            {
+                                var firstFile = item.MeetingMinuteDocuments.FirstOrDefault(); ;
+                                if (fileCount > 1)
+                                {
+                                    <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(item.ID)" aria-expanded="false" aria-controls="collapseDocs@(item.ID)">
+                                        <span>@fileCount</span> Documents...
+                                    </a>
+                                    <div class="collapse" id="collapseDocs@(item.ID)">
+                                        @{
+                                            foreach (var d in item.MeetingMinuteDocuments)
+                                            {
+                                                <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                            }
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                                }
+                            }
+                        }
+                    </td>
+                    <td>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                        {
+                            <a asp-action="Edit" class="Acc_Edit" asp-route-id="@item.ID">Edit </a>
+                        }
+
+                        <a asp-action="Details" class="btn-details" asp-route-id="@item.ID">Details</a>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Delete" class="btn-delete" asp-route-id="@item.ID">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <partial name="_PagingNavBar" />
+
+</form>
+
+
+

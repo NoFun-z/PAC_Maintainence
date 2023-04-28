@@ -1,0 +1,635 @@
+﻿@model IEnumerable<NiagaraCollegeProject.Models.MeetingAttendees>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $("#success-message").fadeOut("slow");
+        }, 4500); //Change the duration (in milliseconds) to whatever you prefer
+    });
+</script>
+
+<!-- CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet" />
+
+<!-- JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+
+@{
+    var activeTab = "";
+}
+
+<script>
+    $(document).ready(function () {
+        // Get the ID of the active tab from the ViewBag.ActiveTab property
+        var activeTab = '@ViewBag.ActiveTab';
+
+        // Update the active state of the tabs based on the activeTab parameter
+        $(`#${activeTab}-tab`).addClass("active");
+        $(`#${activeTab}`).addClass("show active");
+    });
+</script>
+
+<style>
+    .nav-tabs {
+        margin-bottom: 1rem;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            if ($("#SuccessMessage").is(":visible")) {
+                $("#SuccessMessage").fadeOut("slow");
+            }
+        }, 4500); //Change the duration (in milliseconds) to whatever you prefer
+
+    });
+</script>
+@{
+    ViewData["Title"] = "Meeting Attendees";
+    NiagaraCollegeProject.Models.Meeting meeting = (NiagaraCollegeProject.Models.Meeting)ViewBag.Meeting;
+    IEnumerable<NiagaraCollegeProject.Models.MeetingDocuments> meetingdocuments = ViewBag.MeetingDocuments;
+    IEnumerable<NiagaraCollegeProject.Models.ActionItem> meetingactionitems = ViewBag.Meetingactionitems;
+}
+
+<div>
+    <h1 style="font-weight: bolder;">Meeting Details</h1>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => meeting.MeetingStartTimeDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => meeting.MeetingStartTimeDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => meeting.MeetingTopicName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => meeting.MeetingTopicName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => meeting.PAC)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => meeting.PAC.PACName)
+        </dd>
+        <dt class="col-sm-2">
+            Recording Assistant
+        </dt>
+        <dd class="col-sm-10">
+            @if (meeting.Member != null)
+            {
+                @Html.DisplayFor(model => meeting.Member.FullName)
+            }
+            else
+            {
+                <span class="text-muted">No recording assistant assigned</span>
+            }
+        </dd>
+    </dl>
+</div>
+
+
+@*3 TABS FOR 3 TABLES*@
+<div class="container">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link @((activeTab == "table1") ? "active" : "")" href="#table1" id="table1-tab" data-toggle="tab" role="tab" aria-controls="table1" aria-selected="@((activeTab == "table1") ? "true" : "false")">Attendees</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @((activeTab == "table2") ? "active" : "")" href="#table2" id="table2-tab" data-toggle="tab" role="tab" aria-controls="table2" aria-selected="@((activeTab == "table2") ? "true" : "false")">Meeting Minutes</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @((activeTab == "table3") ? "active" : "")" href="#table3" id="table3-tab" data-toggle="tab" role="tab" aria-controls="table3" aria-selected="@((activeTab == "table3") ? "true" : "false")">Meeting Action Items</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade @((activeTab == "table1") ? "show active" : "")" id="table1" role="tabpanel" aria-labelledby="table1-tab">
+            <!-- Table 1 content goes here -->
+            <form asp-action="Index" method="get">
+                <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+                <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+                <input type="hidden" name="MeetingID" value="@meeting.ID" />
+                <input type="hidden" name="activeTab" value="table1" />
+                <br />
+                @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
+                {
+                    <div id="success-message" class="alert alert-success">
+                        <strong>SUCCESS !</strong> @ViewBag.SuccessMessage
+                    </div>
+                }
+                <div class="container-fluid d-block d-lg-none">
+                    @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                    {
+                        <a asp-controller="MeetingAttendees" asp-action="Add" asp-route-MeetingID="@meeting.ID"
+                       asp-route-MeetingTopicName="@meeting.MeetingTopicName">
+                            <span class="btn btn-success" data-bs-toggle="tooltip"
+                              title="Add Attendee"><strong>&#x271A; Add</strong></span>
+                        </a>
+                    }
+                    <div class="row">
+                        @foreach (var item in Model)
+                        {
+                        //Make a card for each one
+                            <div class="card mb-sm-3" style="min-width: 18rem;">
+                                <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.Meeting.MeetingTopicName)</strong></h5>
+                                <div class="card-body">
+                                    <figure class="row">
+                                        <figcaption class="col">
+                                            <p class="card-text">
+                                                @*Card Text goes Here*@
+                                            <p class="card-text">
+                                                    @*Card Text goes Here*@
+                                                <dl class="row lh-1">
+                                                    <dt class="col-3 text-truncate">
+                                                            @Html.DisplayNameFor(model => model.Member)
+                                                    </dt>
+                                                    <dd class="col-9">
+                                                            @Html.DisplayFor(modelItem => item.Member.FullName)
+                                                    </dd>
+                                                    <dt class="col-3 text-truncate">
+                                                            @Html.DisplayNameFor(model => model.Member.Email)
+                                                    </dt>
+                                                    <dd class="col-9">
+                                                            @Html.DisplayFor(modelItem => item.Member.Email)
+                                                    </dd>
+                                                    <dt class="col-3 text-truncate">
+                                                            @Html.DisplayNameFor(model => model.Member.PersonalPhoneFormatted)
+                                                    </dt>
+                                                    <dd class="col-9">
+                                                            @Html.DisplayFor(modelItem => item.Member.PersonalPhoneFormatted)
+                                                    </dd>
+                                                    <dt class="col-3 text-truncate">
+                                                            @Html.DisplayNameFor(model => model.Member.CompanyName)
+                                                    </dt>
+                                                    <dd class="col-9">
+                                                            @Html.DisplayFor(modelItem => item.Member.CompanyName)
+                                                    </dd>
+                                                    <dt class="col-3 text-truncate">
+                                                            @Html.DisplayNameFor(model => model.Member.PAC)
+                                                    </dt>
+                                                    <dd class="col-9">
+                                                            @Html.DisplayFor(modelItem => item.Member.PAC.PACName)
+                                                    </dd>
+                                                </dl>
+                                            </p>
+                                            </p>
+                                        </figcaption>
+                                    </figure>
+                                    <div class="card-footer">
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                        {
+                                            <a class="Acc_Details" data-toggle="tooltip" title="Details of Account" asp-action="Index" asp-controller="MemberActionItems" class="btn-details" asp-route-MemberID="@item.Member.ID"><i class="fa-solid fa-circle-info" style="color: #ffffff;"></i></a>
+                                        }
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <a asp-controller="MeetingAttendees" asp-action="Delete" asp-route-id="@item.ID">
+                                                <span class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Remove Attendee">&#x274C;</span>
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="d-none d-lg-block">
+                    <table class="table">
+                        <thead>
+                            <colgroup>
+                                <col span="1" />
+                                <col span="1" />
+                                <col span="1" />
+                                <col span="1" />
+                                <col span="1" />
+                                <col span="1" />
+                            </colgroup>
+                            <tr>
+                                <th>
+                                    <input type="submit" name="actionButton" value="Members ↕" class="btn" style="color: black; font-weight: bold;" />
+                                    @{
+                                        int totalMembers = 0;
+                                    }
+                                </th>
+                                <th>
+                                    <input type="submit" disabled value="Email" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+
+                                <th>
+                                    <input type="submit" disabled value="Phone" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+
+                                </th>
+                                <th>
+                                    <input type="submit" disabled value="NC Member" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+
+                                </th>
+                                <th>
+                                    <input type="submit" disabled value="PAC" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+
+                                </th>
+                                <th>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                    {
+                                        <a asp-controller="MeetingAttendees" asp-action="Add" asp-route-MeetingID="@meeting.ID"
+                                       asp-route-MeetingTopicName="@meeting.MeetingTopicName">
+                                            <span class="btn btn-success" data-bs-toggle="tooltip"
+                                              title="Add Attendee"><strong>&#x271A; Add</strong></span>
+                                        </a>
+                                        <br />
+                                    }
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                totalMembers += 1;
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Member.FullName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Member.Email)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Member.PersonalPhoneFormatted)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Member.NCGraduate)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Member.PAC.PACName)
+                                    </td>
+                                    <td>
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                        {
+                                            <a class="Acc_Details" data-toggle="tooltip" title="Details of Account" asp-action="Index" asp-controller="MemberActionItems" class="btn-details" asp-route-MemberID="@item.Member.ID"><i class="fa-solid fa-circle-info" style="color: #ffffff;"></i></a>
+                                        }
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <a asp-controller="MeetingAttendees" asp-action="Delete" asp-route-id="@item.ID">
+                                                <span class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Remove Attendee">&#x274C;</span>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td></td>
+                                <td align="right">
+                                    Total Members:
+                                </td>
+                                <td>
+                                    <strong>@totalMembers</strong>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <partial name="_PagingNavBar" />
+            </form>
+        </div>
+        <div class="tab-pane fade @((activeTab == "table2") ? "show active" : "")" id="table2" role="tabpanel" aria-labelledby="table2-tab">
+            <!-- Table 2 content goes here -->
+            <form asp-controller="MeetingAttendees" asp-action="Index" method="get">
+                <input type="hidden" name="sortDirectionD" value="@ViewData["sortDirectionD"]" />
+                <input type="hidden" name="sortFieldD" value="@ViewData["sortFieldD"]" />
+                <input type="hidden" name="MeetingID" value="@meeting.ID" />
+                <input type="hidden" name="activeTab" value="table2" />
+                <div class="form-horizontal">
+                    <button class="btn @(ViewData["FilteringD"]) MMbtn" style="border: 3px solid black;" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+                        Filter/Search
+                    </button>
+                    <div class="collapse" id="collapseFilter">
+                        <div class="card card-body bg-light">
+                            <div class="row">
+                                <div class="form-group col-md-3">
+                                    <label class="control-label">Start Date:</label>
+                                    <input type="date" name="StartDate" class="form-control"
+                                           value="@((string) TempData["StartDate"])" />
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label class="control-label">End Date:</label>
+                                    <input type="date" name="EndDate" class="form-control"
+                                           value="@((string) TempData["EndDate"])" />
+                                </div>
+                                <div class="form-group col-md-4 align-self-end">
+                                    <input type="submit" name="actionButtonD" value="Filter" class="btn btn-outline-primary" />
+                                    <a asp-action="Index" asp-route-MeetingID="@meeting.ID" asp-controller="MeetingAttendees" class="btn btn-outline-dark">Clear</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div id="success-message" class="alert alert-success">
+                        <strong>SUCCESS !</strong> @TempData["SuccessMessage"]
+                    </div>
+                }
+                <div class="container-fluid d-block d-lg-none">
+                    @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                    {
+                        <button type="button" class="Acc_Arc" style="color: white; font-weight: bolder; padding: 5px 8px; margin-bottom: 5px" onclick="location.href='@Url.Action("Index", "ArchivedMeetingMinutes")'">
+                            Archived Meeting Minutes
+                        </button>
+                    }
+                    <div class="row">
+                        @foreach (var item in meetingdocuments)
+                        {
+                        //Make a card for each one
+                            <div class="card mb-sm-3" style="min-width: 18rem;">
+                                <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.FileName)</strong></h5>
+                                <div class="card-body">
+                                    <figure class="row">
+                                        <figcaption class="col">
+                                            <p class="card-text">
+                                                @*Card Text goes Here*@
+                                            <p class="card-text">
+                                                    @*Card Text goes Here*@
+                                                <dl class="row lh-1">
+                                                    <dt class="col-3 text-truncate">
+                                                        UploadedDate
+                                                    </dt>
+                                                    <dd class="col-9">
+                                                        @Html.DisplayFor(modelItem => item.UploadedDate)
+                                                    </dd>
+                                                </dl>
+                                            </p>
+                                            </p>
+                                        </figcaption>
+                                    </figure>
+                                    <div class="card-footer">
+                                        <a asp-action="Download" asp-controller="MeetingDocuments" asp-route-id="@item.ID" class="btn-download">Download</a>
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                        {
+                                            <a class="Acc_Arc" data-toggle="tooltip" title="Archive a meeting minute" asp-action="Archive" asp-controller="MeetingDocuments" asp-route-id="@item.ID"><i class="fa-solid fa-box-archive" style="color: #ffffff;"></i></a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="d-none d-lg-block">
+                    <table class="table">
+                        <thead>
+                            <colgroup class="table">
+                                <col span="1" />
+                                <col span="1" />
+                                <col span="1" />
+                            </colgroup>
+                            <tr>
+                                @{
+                                    int totalMinutes = 0;
+                                }
+                                <th>
+                                    <input type="submit" disabled value="File Name" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+                                </th>
+                                <th>
+                                    <input type="submit" disabled value="Upload Date" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+                                </th>
+                                <th>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                    {
+                                        <button type="button" class="Acc_Arc" style="color: white; font-weight: bolder; padding: 5px 8px; margin-bottom: 5px" onclick="location.href='@Url.Action("Index", "ArchivedMeetingMinutes")'">
+                                            Archived Meeting Minutes
+                                        </button>
+                                    }
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in meetingdocuments)
+                            {
+                                totalMinutes += 1;
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.FileName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.UploadedDate)
+                                    </td>
+                                    <td>
+                                        <a asp-action="Download" asp-controller="MeetingDocuments" asp-route-id="@item.ID" class="btn-download">Download</a>
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                        {
+                                            <a class="Acc_Arc" data-toggle="tooltip" title="Archive a meeting minute" asp-action="Archive" asp-controller="MeetingDocuments" asp-route-id="@item.ID"><i class="fa-solid fa-box-archive" style="color: #ffffff;"></i></a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td align="right">
+                                    Total Meeting Minutes:
+                                </td>
+                                <td>
+                                    <strong>@totalMinutes</strong>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <partial name="_PagingNavBar" />
+            </form>
+        </div>
+        <div class="tab-pane fade @((activeTab == "table3") ? "show active" : "")" id="table3" role="tabpanel" aria-labelledby="table3-tab">
+            <!-- Table 3 content goes here -->
+            <form asp-controller="MeetingAttendees" asp-action="Index" method="get">
+                <input type="hidden" name="sortDirectionA" value="@ViewData["sortDirectionA"]" />
+                <input type="hidden" name="sortFieldA" value="@ViewData["sortFieldA"]" />
+                <input type="hidden" name="MeetingID" value="@meeting.ID" />
+                <input type="hidden" name="activeTab" value="table3" />
+                <div class="form-horizontal">
+                    <button class="btn @(ViewData["FilteringA"])" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+                        Filter/Search
+                    </button>
+                    <div class="collapse" id="collapseFilter">
+                        <div class="card card-body bg-light">
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Select by Members:</label>
+                                    @Html.DropDownList("MemberID", null, "All Members", htmlAttributes: new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Filter Completed:</label>
+                                    @Html.DropDownList("Completed", null, "All", htmlAttributes: new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-md-4 align-self-end">
+                                    <input type="submit" name="actionButtonA" value="Filter" class="btn btn-outline-primary" />
+                                    <a asp-action="Index" asp-route-MeetingID="@meeting.ID" asp-controller="MeetingAttendees" class="btn btn-outline-dark">Clear</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div id="success-message" class="alert alert-success" style="margin-left: 0">
+                        <strong>SUCCESS !</strong> @TempData["SuccessMessage"]
+                    </div>
+                }
+                <div class="container-fluid d-block d-lg-none">
+                    @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                    {
+                        <button type="button" class="Acc_Arc" style="color: white; font-weight: bolder; padding: 5px 8px; margin-bottom: 5px" onclick="location.href='@Url.Action("Index", "ArchivedActionItems")'">
+                            Archived ActionItems
+                        </button>
+                        <a asp-controller="ActionItems" asp-action="Add" asp-route-MeetingID="@meeting.ID">
+                            <span class="btn btn-success" data-bs-toggle="tooltip"
+                              title="Add ActionItems"><strong>&#x271A; Add</strong></span>
+                        </a>
+                    }
+                    <div class="row">
+                        @foreach (var item in meetingactionitems)
+                        {
+                        //Make a card for each one
+                            <div class="card mb-sm-3" style="min-width: 18rem;">
+                                <h5 class="card-header"><strong>@Html.DisplayFor(modelItem => item.AgendaName)</strong></h5>
+                                <div class="card-body">
+                                    <figure class="row">
+                                        <figcaption class="col">
+                                            <p class="card-text">
+                                                @*Card Text goes Here*@
+                                            <p class="card-text">
+                                                    @*Card Text goes Here*@
+                                                <dl class="row lh-1">
+                                                    <dt class="col-3 text-truncate">
+                                                        Assigned To
+                                                    </dt>
+                                                    <dd class="col-9">
+                                                            @Html.DisplayFor(modelItem => item.Member.FullName)
+                                                    </dd>
+                                                    <dt class="col-3 text-truncate">
+                                                        Completed
+                                                    </dt>
+                                                    <dd class="col-9">
+                                                            @Html.DisplayFor(modelItem => item.Completed)
+                                                    </dd>
+                                                    <dt class="col-3 text-truncate">
+                                                        Due Date
+                                                    </dt>
+                                                    <dd class="col-9">
+                                                            @Html.DisplayFor(modelItem => item.TaskDueDate)
+                                                    </dd>
+
+                                                </dl>
+                                            </p>
+                                            </p>
+                                        </figcaption>
+                                    </figure>
+                                    <div class="card-footer">
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor") || User.IsInRole("Staff"))
+                                        {
+                                            <a asp-controller="ActionItems" asp-action="Edit" class="Acc_Edit" asp-route-id="@item.ID"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                                        }
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                        {
+                                            <a class="Acc_Arc" data-toggle="tooltip" title="Archive an action item" asp-action="Archive" asp-controller="ActionItems" asp-route-id="@item.ID"><i class="fa-solid fa-box-archive" style="color: #ffffff;"></i></a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="d-none d-lg-block">
+                    <table class="table">
+                        <thead>
+                            <colgroup class="table">
+                                <col span="1" />
+                                <col span="1" />
+                                <col span="1" />
+                                <col span="1" />
+                                <col span="1" />
+                            </colgroup>
+                            <tr>
+                                @{
+                                    int totalItems = 0;
+                                }
+                                <th>
+                                    <input type="submit" name="actionButton" value="Member ↕" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" />
+                                </th>
+                                <th>
+                                    <input type="submit" disabled value="Item Name" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+                                </th>
+                                <th>
+                                    <input type="submit" disabled value="Completed" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0; cursor:pointer;opacity: 1;" />
+                                </th>
+                                <th>
+                                    <input type="submit" name="actionButton" value="Due Date ↕" class="btn" style="color: black; font-weight: bold; margin-bottom: 0; padding-bottom: 0;" />
+                                </th>
+                                <th>
+                                    <button type="button" class="Acc_Arc" style="color: white; font-weight: bolder; padding: 5px 8px; margin-bottom: 5px" onclick="location.href='@Url.Action("Index", "ArchivedActionItems")'">
+                                        Archived Action Items
+                                    </button>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                    {
+                                        <a asp-controller="ActionItems" asp-action="Add" asp-route-MeetingID="@meeting.ID">
+                                            <span class="btn btn-success" data-bs-toggle="tooltip"
+                                              title="Add ActionItems"><strong>&#x271A; Add</strong></span>
+                                        </a>
+                                    }
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in meetingactionitems)
+                            {
+                                totalItems += 1;
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Member.FullName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.AgendaName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Completed)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TaskDueDate)
+                                    </td>
+                                    <td>
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor") || User.IsInRole("Staff"))
+                                        {
+                                            <a asp-controller="ActionItems" asp-action="Edit" class="Acc_Edit" asp-route-id="@item.ID"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></a>
+                                        }
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                                        {
+                                            <a class="Acc_Arc" data-toggle="tooltip" title="Archive an action item" asp-action="Archive" asp-controller="ActionItems" asp-route-id="@item.ID"><i class="fa-solid fa-box-archive" style="color: #ffffff;"></i></a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td></td>
+                                <td align="right">
+                                    Total Action Items:
+                                </td>
+                                <td>
+                                    <strong>@totalItems</strong>
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <partial name="_PagingNavBar" />
+            </form>
+        </div>
+    </div>
+</div>
+<div>
+    <a asp-action="Edit" asp-controller="Meetings" class="btn btn-primary Save_btns" asp-route-id="@meeting.ID">Edit</a>
+    <a href='@ViewData["returnURL"]' class="Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+</div>
+

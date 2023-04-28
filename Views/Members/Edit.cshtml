@@ -1,0 +1,245 @@
+﻿@model NiagaraCollegeProject.Models.Member
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+@*Populate Pac ddl with related division fk*@
+<script type="text/jscript">
+    $(function ()
+    {
+        $('#divisioncbo').change(function ()
+        {        
+            $.getJSON('/Members/GetPacList/' + $('#divisioncbo').val(), function (data)
+            {
+                var items = '';
+                $.each(data, function (i, PAC)
+                {
+                    items += "<option value='" + PAC.value + "'>" + PAC.text + "</option>";
+                });
+                $('#PACID').html(items);
+            });
+        });
+    });
+</script>
+<style>
+input:invalid {
+    border: 2px dashed red;
+}
+
+input:valid {
+    border: 2px solid green;
+}
+
+</style>
+
+<h1>Edit @Model.FullName's Profile</h1>
+<br />
+                              <span class="colorred">*Fields marked with a red asterisk are required.</span>    
+
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                             @{
+    var hasPicture = (Model.MemberPhoto?.Content != null);
+    if(hasPicture)
+    {
+        @:<div>
+        string imageBase64 = Convert.ToBase64String(Model.MemberPhoto.Content);
+        string imageSrc = string.Format("data:" + Model.MemberPhoto.MimeType + ";base64, {0}", imageBase64);
+        <img src="@imageSrc" width="350" height="200"alt="The profile picture of @Model.FullName" title="The profile picture of @Model.FullName" class="img-fluid rounded"/>
+        @:</div>
+    }
+}
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
+            <div>
+                @{
+                    if (hasPicture)
+                    {
+                        <div class="row">
+                            <div class="form-check m-3">
+                                <input class="form-check-input" type="checkbox" id="chkRemoveImage" name="chkRemoveImage">
+                                <label class="form-check-label" for="chkRemoveImage">
+                                    <strong>Check To Remove Image</strong>
+                                </label>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="form-horizontal">
+        <div class="row">
+
+            <div class="form-group col-md-6">
+               <h4>Personal Information</h4>
+              <div class="form-group">
+                <label asp-for="Salutation" class="control-label"></label><span class="colorred">*</span>
+                <select asp-for="SalutationID" required class="form-control" asp-items="ViewBag.SalutationID"></select>
+                <span asp-validation-for="SalutationID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Davion", @required = "true"}})
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Hopkins", @required = "true"}})
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label"></label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 2899451347", @required = "true"}})
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: JohnWick@outlook.com", @required = "true", @type = "email"}})
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EducationSummary" class="control-label"></label>
+                @{
+                    <td><textarea class="form-control" style="height: 120px; width: 320px" id="Comments" name="Comments" placeholder="example: Sophomore at Brock University">@Model.EducationSummary</textarea></td>
+                }
+                <span asp-validation-for="EducationSummary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OccupationalSummary" class="control-label"></label>
+                                @{
+                    <td><textarea class="form-control" style="height: 120px; width: 320px" id="Comments" name="Comments" placeholder="example: Networking technician at ABC company from.. to..">@Model.OccupationalSummary</textarea></td>
+                }
+                <span asp-validation-for="OccupationalSummary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StreetAddress" class="control-label"></label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.StreetAddress, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 15 YorkDale avenue",@required = "true"}})
+                <span asp-validation-for="StreetAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Province" class="control-label"></label><span class="colorred">*</span>
+                <select asp-for="Province" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Provinces>()"></select>
+                <span asp-validation-for="Province" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.City, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Windsor", @required = "true"}})
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostalCode" class="control-label"></label></label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.PostalCode, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: G2AG19", @required = "true"}})
+                <span asp-validation-for="PostalCode" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="NCGraduate" /> @Html.DisplayNameFor(model => model.NCGraduate)
+                </label>
+            </div>
+            </div>
+            <div class="form-group col-md-6">
+                               <h4>Employment Information</h4>
+            <div class="form-group">
+                <label asp-for="CompanyName" class="control-label">Company Name</label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.CompanyName, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Google", @required = "true"}})
+                <span asp-validation-for="CompanyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanyStreetAddress" class="control-label">Street Address</label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.CompanyStreetAddress, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 15 YorkDale avenue", @required = "true"}})
+                <span asp-validation-for="CompanyStreetAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanyProvince" class="control-label">Province</label><span class="colorred">*</span>
+                <select asp-for="CompanyProvince" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Provinces>()"></select>
+                <span asp-validation-for="CompanyProvince" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanyCity" class="control-label">City</label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.CompanyCity, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Windsor", @required = "true"}})
+                <span asp-validation-for="CompanyCity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanyPostalCode" class="control-label">Postal Code</label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.CompanyPostalCode, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: G2AG19", @required = "true"}})
+                <span asp-validation-for="CompanyPostalCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanyPhoneNumber" class="control-label">Phone Number</label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.CompanyPhoneNumber, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: 2899451347", @required = "true"}})
+                <span asp-validation-for="CompanyPhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanyEmail" class="control-label">Email</label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.CompanyEmail, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: google@google.com", @required = "true", @type = "email"}})
+                <span asp-validation-for="CompanyEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PreferredContact" class="control-label">Preferred Email Contact</label><span class="colorred">*</span>
+                <select asp-for="PreferredContact" required class="form-control" asp-items="@Html.GetEnumSelectList<Member.Contact>()"></select>
+                <span asp-validation-for="PreferredContact" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanyPositionTitle" class="control-label">Position Title</label><span class="colorred">*</span>
+                @Html.EditorFor(model => model.CompanyPositionTitle, new { htmlAttributes = new {@class = "form-control", @placeholder = " example: Receiptionist", @required = "true"}})
+                <span asp-validation-for="CompanyPositionTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label custom-file-label">Profile Picture File:</label>
+                <div class="input-group mb-3">
+                    <input type="file" class="form-control" name="thePicture" id="thePicture" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label><strong>Supporting Documents:</strong></label>
+                <div class="ml-md-3">
+                    @{
+                        int fileCount = Model.MemberDocuments.Count;
+                        if (fileCount > 0)
+                        {
+                            var firstFile = Model.MemberDocuments.FirstOrDefault(); ;
+                            if (fileCount > 1)
+                            {
+                                        <a class="" role="button" data-bs-toggle="collapse" href="#collapseDocs@(Model.ID)" aria-expanded="false" aria-controls="collapseDocs@(Model.ID)">
+                                            <span class="badge badge-info">@fileCount</span> Current Documents...
+                                        </a>
+                                <div class="collapse" id="collapseDocs@(Model.ID)">
+                                    @{
+                                        foreach (var d in Model.MemberDocuments)
+                                        {
+                                            <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                        }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label custom-file-label">Upload Additional Documents:</label>
+                <div class="input-group mb-3">
+                    <input type="file" class="form-control" name="theFiles" multiple="multiple">
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+    <div class="form-group">
+                <button type="submit"class="btn btn-primary Save_btns"><i class="fa-solid fa-check"></i></button>
+                <a href='@ViewData["returnURL"]' class="btn btn-primary Back_btns"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+
+            </div>
+        </form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
+
